@@ -1,0 +1,13 @@
+[
+    {    "source": "app\/assistants\/stage-assistant.js"},
+    {   "source": "app\/models\/first.js" },
+    {
+        "source": "app\/assistants\/first-assistant.js",
+        "scenes": "first"
+    },
+    {
+        "source": "app\/assistants\/day-1-assistant.js",
+        "scenes": "day-1"
+    }
+
+]
