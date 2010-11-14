@@ -19,7 +19,13 @@ FirstAssistant.prototype.setup = function() {
     );
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
     this.controller.listen("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
-
+    
+    var time =  Mojo.Format.formatDate(new Date(), {
+		time: "medium",
+        date: "medium",
+		countryCode: "DE"
+    });
+    this.controller.get('time').update(time);
 }
 
 FirstAssistant.prototype.activate = function(event) {
@@ -28,7 +34,7 @@ FirstAssistant.prototype.activate = function(event) {
 
 
 FirstAssistant.prototype.deactivate = function(event) {
-    //this.controller.stopListening("mainMenuWidget", Mojo.Event.listTap,this.openDay);
+    this.controller.stopListening("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
 }
 
 FirstAssistant.prototype.cleanup = function(event) {
@@ -37,10 +43,8 @@ FirstAssistant.prototype.cleanup = function(event) {
 
 FirstAssistant.prototype.openMenuItem = function(event) {
     
-	if (this.menuModel.items[event.index].tapped === true)   {
-	    //push scene
-    } 
-    
-	
+    Mojo.Log.error(this.menuModel.items[event.index].scene);
+    Mojo.Controller.stageController.pushScene(this.menuModel.items[event.index].scene);
+
 };
 
