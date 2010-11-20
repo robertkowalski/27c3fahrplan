@@ -1,6 +1,7 @@
 [
     {"source": "app\/assistants\/stage-assistant.js"},
     {"source": "app\/models\/first.js"},
+    {"source": "app\/models\/fahrplan.js"},
     {
         "source": "app\/assistants\/first-assistant.js",
         "scenes": "first"
@@ -10,15 +11,7 @@
         "scenes": "day-1"
     },
     {
-        "source": "app\/assistants\/day-2-assistant.js",
-        "scenes": "day-2"
-    },
-    {
-        "source": "app\/assistants\/day-3-assistant.js",
-        "scenes": "day-3"
-    },
-    {
-        "source": "app\/assistants\/day-4-assistant.js",
-        "scenes": "day-4"
+        "source": "app\/assistants\/help-assistant.js",
+        "scenes": "help"
     }
 ]

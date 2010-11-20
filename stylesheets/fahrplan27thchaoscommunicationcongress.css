@@ -12,3 +12,9 @@
     bottom:0px;
     left:200px;
 }
+.copyright_help {
+    position:relative;
+	left: 10px;
+    bottom:2px;
+    padding-top:5px;
+}
