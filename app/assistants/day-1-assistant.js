@@ -54,131 +54,28 @@ Day1Assistant.prototype.setup = function() {
              disabled: false
          }
      );
-     var text = Fahrplan.data.evalJSON(true);
+     var text = Fahrplan.data;
+     var day = 0;
+     var room = 0; 
      
-     //calculatate values like 11:30 into minutes from 00:00
-     function calculateMinutes(time) {
-         this.time = time.split(':');
-         var split, tmp, result;
-         tmp = Number(this.time[0])*60;
-         result = tmp + Number(this.time[1]);
-
-         return result;
+     for(var i in text[day][room]){
+         Mojo.Log.error(i);
+         Mojo.Log.error(text[day][room][i].title);
+         
      }
-     function calculateStartEnding(minutes) {
-         this.minutes = Number(minutes);
-         if(this.minutes < 240) {
-             result = this.minutes+1440;
-         } else {
-             result = this.minutes;  
+     Mojo.Log.error(text[day].dayends);
+     for(var i = 690; i<=text[day].dayends; i = i+15){
+         var tr = '<tr> <td><td> </tr>';
+         try {
+             titletext[day][room][i].start;
+         }catch(e){
+             
          }
-         return result;  
      }
-     function sortObj(arr){
-    	// Setup Arrays
-    	var sortedKeys = new Array();
-    	var sortedObj = {};
-        this.arr = arr;
-    	// Separate keys and sort them
-    	for (var i in this.arr){
-    		sortedKeys.push(i);
-    	}
-    	sortedKeys.sort();
-    
-    	// Reconstruct sorted obj based on keys
-    	for (var i in sortedKeys){
-    		sortedObj[sortedKeys[i]] = arr[sortedKeys[i]];
-    	}
-    	return sortedObj;
-    }  
-    function chooseColor(track){
-        var color;
-        this.track = track;
-        
-//        'Community'   // khaki
-//        'Society'     // moccasin
-//        'Hacking'     // lightgreen
-//        'Culture'     // plum
-//         event =      // #C1C1C1
-//        'Make'
-//        'Science'
 
-		switch (this.track) {
-            case 'Community':
-                color = 'khaki';
-                break;
-            case 'Society':
-                color = 'moccasin';
-                break;
-            case 'Hacking':
-                color = 'lightgreen';
-                break;
-            case 'Culture':
-                color = 'plum';
-                break;
-            default:
-                color = '#C1C1C1';
-        }
-        return color
-    }   
-     
-  
-    // DAY&rooms //
-    var day = 0;
-    var rooms = 3;
-     
-    
-    var timeTable = [];
-    timeTable[0] = [];
-    timeTable[1] = [];
-    timeTable[2] = [];
-    var minutesStart, minutesDuration, minutesEnding, minutesRealstart;
-    
-    for (var j=0; j<rooms; j++) {
-        
-        for (var i=0; i<text.day[day].room[j].event.length; i++) {
-            /*        Mojo.Log.error(text.day[0]['room'][0]['event'][i]['start']);
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['duration']);
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['title']);
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['track']); //color
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['language']);
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['persons'].person);
-         Mojo.Log.error(text.day[0]['room'][0]['event'][i]['duration']);
-         */
-            minutesStart = calculateMinutes(text.day[day].room[j].event[i].start);
-            minutesDuration = calculateMinutes(text.day[day].room[j].event[i].duration);
-            minutesEnding = calculateStartEnding(minutesStart + minutesDuration);
-            minutesRealstart = calculateStartEnding(minutesStart);
-            
-            timeTable[j][minutesRealstart] = [];
-            timeTable[j][minutesRealstart]['start'] = minutesRealstart; 
-            timeTable[j][minutesRealstart]['duration'] = minutesDuration;
-            timeTable[j][minutesRealstart]['end'] = minutesEnding;
-            
-            timeTable[j][minutesRealstart]['language'] = text.day[day].room[j].event[i].language;
-            timeTable[j][minutesRealstart]['title'] = text.day[day].room[j].event[i].title;          
-            timeTable[j][minutesRealstart]['subtitle'] = text.day[day].room[j].event[i].subtitle;
-           
-            timeTable[j][minutesRealstart]['track'] = chooseColor(text.day[day].room[j].event[i].track); 
-  
-        }
-    }  
- 
-    var test = [];
-    test[0] = sortObj(timeTable[1]);
-    for (var k in test[0]){
-        Mojo.Log.error(test[0][k]['track']);
-    }
-   
-    
-    //Duration / Slots 
-    var test = '01:30'.split(':');
-    var result = 0;
-    var tmp = Number(test[0])*60;
-    var result = tmp + Number(test[1]);  
-    var slots = result / 4; 
-    
-     
+ //    this.controller.get('test').update(test);		
+
+
 /*     
     this.openSaal = this.openSaal.bindAsEventListener(this); //PRE-CACHE//	
     Mojo.Event.listen(this.controller.get('saal1'), Mojo.Event.tap, this.openSaal('1'));
