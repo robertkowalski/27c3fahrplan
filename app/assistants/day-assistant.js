@@ -64,52 +64,9 @@ DayAssistant.prototype.setup = function() {
  		visible: true,
  		items: [{}, this.reloadModel]
      };
-	this.text = Fahrplan.data.evalJSON(true);
 	
-	var emptyTimes = [];
-	emptyTimes[this.day] = [];
-	
-	var countEmpty = 0;
-	var room, i;
-	for (room = 0; room < 3; room++) {
-		emptyTimes[this.day][room] = [];		
-		for (i = 0; i < this.text[this.day][room].length - 1; i++) {
-			if (this.text[this.day][room][i].ending < this.text[this.day][room][i + 1].start) {
-				emptyTimes[this.day][room][countEmpty] = [];
-				emptyTimes[this.day][room][countEmpty].start = this.text[this.day][room][i].ending;
-				emptyTimes[this.day][room][countEmpty].ending = this.text[this.day][room][i + 1].start;
-				emptyTimes[this.day][room][countEmpty].persons = '';
-				emptyTimes[this.day][room][countEmpty].language = '';
-				emptyTimes[this.day][room][countEmpty].color = 'transparent';
-				emptyTimes[this.day][room][countEmpty].track = '';
-				emptyTimes[this.day][room][countEmpty].subtitle = '&nbsp;';
-				emptyTimes[this.day][room][countEmpty].title = '&nbsp;';
-				emptyTimes[this.day][room][countEmpty].duration = emptyTimes[this.day][room][countEmpty].ending - emptyTimes[this.day][room][countEmpty].start;
-				emptyTimes[this.day][room][countEmpty].slots = emptyTimes[this.day][room][countEmpty].duration / 15;
-				emptyTimes[this.day][room][countEmpty].humanstartend = '';
-				emptyTimes[this.day][room][countEmpty].hourid = 'n';
-				countEmpty++;
-			}
-			
-		}
-		countEmpty=0;
-		this.text[this.day][room] = this.text[this.day][room].concat(emptyTimes[this.day][room]);
-		
-		this.text[this.day][room].sort(function(a, b){
-			return a.start - b.start
-		});
-		for(var i=0; i<this.text[this.day][room].length; i++){
-			this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
-			if(this.text[this.day][room][i].title.length >= 45 && this.text[this.day][room][i].slots <= 2){
-				this.text[this.day][room][i].title = this.text[this.day][room][i].title.substring(0,45);
-				this.text[this.day][room][i].title += '...';
-			}
-			if(this.text[this.day][room][i].duration > 150) {
-				this.text[this.day][room][i].duration = 150;
-			}
-			
-		}
-	} //End Line 82
+    this.text = Fahrplan.data;
+
 
 	this.chooseRoom = 0;
 		
@@ -141,8 +98,10 @@ DayAssistant.prototype.setup = function() {
 }
 
 DayAssistant.prototype.activate = function(event) {
+	//just jump to event if the day = current day of event
 	dateArr = [];
 	var today = this.date.getDate()+this.date.getMonth()+this.date.getFullYear();
+//    today = '29122010';
 	dateArr[0] = '27122010';
 	dateArr[1] = '28122010';
 	dateArr[2] = '29122010';
@@ -152,9 +111,20 @@ DayAssistant.prototype.activate = function(event) {
 		if(dateArr[Number(this.day)] == today){
 			this.chooseSaal();
 		}
-	}  
+	}
+    this.showDetails(this.chooseRoom);  
+/*    
+    //make bubbles tapable
+    var room = 0;
+    var detailid, openDetail;
+//    for (room = 0; room < 3; room++) {
+        for (i = 0; i < this.text[this.day][0].length; i++) {
+            detailid = this.controller.get(this.text[this.day][0][i].id); // can just get events of current room/template
+            openDetail = this.openDetailWithId.bind(this, this.day, room, detailid); //PRE-CACHE//
+            Mojo.Event.listen(detailid, Mojo.Event.tap, openDetail);
+        }
+//   }*/
 }
-
 
 DayAssistant.prototype.deactivate = function(event) {	
 	Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
@@ -190,18 +160,56 @@ DayAssistant.prototype.handleTap= function(element, event) {
 }
 
 DayAssistant.prototype.chooseSaal = function() {
-	thisHour = this.date.getHours();	
+	var thisHour = this.date.getHours();   
+//    Mojo.Log.error(thisHour);	
 	var countroom;
+    
 	for (countroom = 2; countroom > -1; countroom--) {
-		for (i = 0; i < this.text[this.day][countroom].length; i++) { //dayends
+		for (i = 0; i < this.text[this.day][countroom].length; i++) {
 			if (this.text[this.day][countroom][i].hourid == thisHour) {
 				this.chooseRoom = countroom;
-				this.timeID = this.text[this.day][countroom][i].hourid;
+				this.timeID = i;
+                break;
+			}
+		}
+        if (this.timeID) {
+            break;
+        }    
+	} //max 2hrs for next events if currently no event
+	
+	if(!this.timeID){
+		thisHour = thisHour+1;
+		for (countroom = 2; countroom > -1; countroom--) {
+			for (i = 0; i < this.text[this.day][countroom].length; i++) { 
+				if (this.text[this.day][countroom][i].hourid == thisHour) {
+					this.chooseRoom = countroom;
+					this.timeID = this.text[this.day][countroom][i].hourid;
+				}
 			}
 		}
 	}	
-	this.setTitle(this.chooseRoom);
-	this.revealItem(this.timeID);			
+	if(!this.timeID){
+		thisHour = thisHour+2;
+		for (countroom = 2; countroom > -1; countroom--) {
+			for (i = 0; i < this.text[this.day][countroom].length; i++) { 
+				if (this.text[this.day][countroom][i].hourid == thisHour) {
+					this.chooseRoom = countroom;
+					this.timeID = this.text[this.day][countroom][i].hourid;
+				}
+			}
+		}
+	}	
+//   Mojo.Log.error('timeid: '+this.timeID);
+	if (this.timeID) {
+        this.menuModel = {
+            items: this.text[this.day][this.chooseRoom]
+        };
+        this.controller.setWidgetModel("TimeWidget", this.menuModel);	
+		this.setTitle(this.chooseRoom);
+		this.revealItem(this.timeID);
+        this.showDetails(this.chooseRoom);
+	}	
+    return true;			
 }
 DayAssistant.prototype.setTitle = function(room){
 	switch(room){
@@ -216,8 +224,33 @@ DayAssistant.prototype.setTitle = function(room){
 		break;
 	}
 }	
-DayAssistant.prototype.revealItem = function(timeId) {	
+DayAssistant.prototype.revealItem = function(timeID) {	
 	this.controller.setWidgetModel("TimeWidget", this.menuModel);
 	this.timeList = this.controller.get('TimeWidget');
-	this.timeList.mojo.revealItem(timeId, false);
+    Mojo.Log.error('revealItem:'+timeID);
+	this.timeList.mojo.revealItem(timeID, false);
+}
+
+DayAssistant.prototype.showDetails = function(room){
+    //make bubbles tapable
+//    var room = 0;
+    this.room = room;
+    
+    var detailid, openDetail;
+   
+    for (i = 0; i < this.text[this.day][this.room].length; i++) {
+        detailid = this.controller.get(this.text[this.day][this.room][i].id); // can just get events of current room/template
+        openDetail = this.openDetailWithId.bind(this, this.day, this.room, detailid); //PRE-CACHE//
+        Mojo.Event.listen(detailid, Mojo.Event.tap, openDetail);
+    }
+}
+
+DayAssistant.prototype.openDetailWithId = function(day, room, event) {
+
+        Mojo.Controller.stageController.pushScene(  { name:'detail' },
+                                                    {   day: day,
+                                                        room: room,
+                                                        detailid: event
+                                                     });
+
 }

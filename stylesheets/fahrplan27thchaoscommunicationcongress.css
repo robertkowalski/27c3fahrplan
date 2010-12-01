@@ -1,3 +1,8 @@
+.italic {
+    font-style:italic;
+}
+
+
 .buttonClass {
     position:fixed;
     bottom:0px;    
