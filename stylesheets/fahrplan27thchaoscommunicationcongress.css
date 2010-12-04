@@ -6,14 +6,14 @@
 .buttonClass {
     position:fixed;
     bottom:0px;    
-	right:10px;
-	padding-right:200px;
+    right:10px;
+    padding-right:200px;
 }
 .buttonClass2 {
     position:fixed;
     bottom:0px;
     right:10px;
-	padding-right:100px;
+    padding-right:100px;
 }
 .buttonClass3 {
     position:fixed;
@@ -22,7 +22,7 @@
 }
 .copyright_help {
     position:relative;
-	left: 10px;
+    left: 10px;
     bottom:2px;
     padding-top:5px;
 }

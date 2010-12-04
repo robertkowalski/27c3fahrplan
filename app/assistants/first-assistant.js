@@ -31,39 +31,39 @@ function FirstAssistant() {
 
 FirstAssistant.prototype.setup = function(){
 
-	this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
-		omitDefaultItems: true
-	}, this.model = {
-		visible: true,
-		items: [Mojo.Menu.editItem, {
-			label: "Help",
-			command: "do-helpAddSub"
-		}, {
-			label: "About",
-			command: 'do-About'
-		}]
-	});
-	
-	this.controller.setupWidget("MenuWidget", {
-		itemTemplate: "first/first-row-template",
-		listTemplate: "first/first-list-template",
-		swipeToDelete: false,
-		renderLimit: 23,
-		reorderable: false
-	}, this.menuModel = {
-		items: Congress.menu
-	});
-	
-	this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
+    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
+        omitDefaultItems: true
+    }, this.model = {
+        visible: true,
+        items: [Mojo.Menu.editItem, {
+            label: "Help",
+            command: "do-helpAddSub"
+        }, {
+            label: "About",
+            command: 'do-About'
+        }]
+    });
+    
+    this.controller.setupWidget("MenuWidget", {
+        itemTemplate: "first/first-row-template",
+        listTemplate: "first/first-list-template",
+        swipeToDelete: false,
+        renderLimit: 23,
+        reorderable: false
+    }, this.menuModel = {
+        items: Congress.menu
+    });
+    
+    this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
 }
 
 FirstAssistant.prototype.activate = function(event) {
-	this.controller.listen("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
+    this.controller.listen("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
 }
 
 
 FirstAssistant.prototype.deactivate = function(event) {
-	this.controller.stopListening("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
+    this.controller.stopListening("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
 
 }
 

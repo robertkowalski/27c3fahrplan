@@ -8,54 +8,54 @@ Fahrplan.data = Fahrplan.data.evalJSON(true);
 
 this.text = Fahrplan.data;
 var emptyTimes = [];
-	
-	
+    
+    
 var countEmpty = 0;
 var room, i;
 for(this.day = 0; this.day < 4; this.day++){   
     emptyTimes[this.day] = []; 
-	for (room = 0; room < 3; room++) {
-		emptyTimes[this.day][room] = [];	
-		//Create times where no event is	
-		for (i = 0; i < this.text[this.day][room].length - 1; i++) {
+    for (room = 0; room < 3; room++) {
+        emptyTimes[this.day][room] = [];	
+        //Create times where no event is	
+        for (i = 0; i < this.text[this.day][room].length - 1; i++) {
             //borders for bubbles
             this.text[this.day][room][i].color =  this.text[this.day][room][i].color + ';border:1px solid black;';
-			//create empty times for template
+            //create empty times for template
             if (this.text[this.day][room][i].ending < this.text[this.day][room][i + 1].start) {
-				emptyTimes[this.day][room][countEmpty] = [];
-				emptyTimes[this.day][room][countEmpty].start = this.text[this.day][room][i].ending;
-				emptyTimes[this.day][room][countEmpty].ending = this.text[this.day][room][i + 1].start;
-				emptyTimes[this.day][room][countEmpty].persons = '';
-				emptyTimes[this.day][room][countEmpty].language = '';
-				emptyTimes[this.day][room][countEmpty].color = 'transparent';
-				emptyTimes[this.day][room][countEmpty].track = '';
-				emptyTimes[this.day][room][countEmpty].subtitle = '&nbsp;';
-				emptyTimes[this.day][room][countEmpty].title = '&nbsp;';
-				emptyTimes[this.day][room][countEmpty].duration = emptyTimes[this.day][room][countEmpty].ending - emptyTimes[this.day][room][countEmpty].start;
-				emptyTimes[this.day][room][countEmpty].slots = emptyTimes[this.day][room][countEmpty].duration / 15;
-				emptyTimes[this.day][room][countEmpty].humanstartend = '';
-				emptyTimes[this.day][room][countEmpty].hourid = 'n';
+                emptyTimes[this.day][room][countEmpty] = [];
+                emptyTimes[this.day][room][countEmpty].start = this.text[this.day][room][i].ending;
+                emptyTimes[this.day][room][countEmpty].ending = this.text[this.day][room][i + 1].start;
+                emptyTimes[this.day][room][countEmpty].persons = '';
+                emptyTimes[this.day][room][countEmpty].language = '';
+                emptyTimes[this.day][room][countEmpty].color = 'transparent';
+                emptyTimes[this.day][room][countEmpty].track = '';
+                emptyTimes[this.day][room][countEmpty].subtitle = '&nbsp;';
+                emptyTimes[this.day][room][countEmpty].title = '&nbsp;';
+                emptyTimes[this.day][room][countEmpty].duration = emptyTimes[this.day][room][countEmpty].ending - emptyTimes[this.day][room][countEmpty].start;
+                emptyTimes[this.day][room][countEmpty].slots = emptyTimes[this.day][room][countEmpty].duration / 15;
+                emptyTimes[this.day][room][countEmpty].humanstartend = '';
+                emptyTimes[this.day][room][countEmpty].hourid = 'n';
                 emptyTimes[this.day][room][countEmpty].id = '0000';
-				countEmpty++;
-			}
-		}
+                countEmpty++;
+            }
+        }
         //draw border around last bubble
         this.text[this.day][room][this.text[this.day][room].length - 1].color =  this.text[this.day][room][this.text[this.day][room].length - 1].color + ';border:1px solid black;';
 
-		countEmpty=0;
-		this.text[this.day][room] = this.text[this.day][room].concat(emptyTimes[this.day][room]);
-		
-		this.text[this.day][room].sort(function(a, b){
-			return a.start - b.start
-		});
-		// make bubbles bigger
-		for(var i=0; i<this.text[this.day][room].length; i++){
-			this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
-			if(this.text[this.day][room][i].duration > 150) {
-				this.text[this.day][room][i].duration = 150;
-			}
-			
-		}
-	} //End Line 82
+        countEmpty=0;
+        this.text[this.day][room] = this.text[this.day][room].concat(emptyTimes[this.day][room]);
+        
+        this.text[this.day][room].sort(function(a, b){
+            return a.start - b.start
+        });
+        // make bubbles bigger
+        for(var i=0; i<this.text[this.day][room].length; i++){
+            this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
+            if(this.text[this.day][room][i].duration > 150) {
+                this.text[this.day][room][i].duration = 150;
+            }
+            
+        }
+    } //End Line 82
 }	
 Fahrplan.data = this.text;

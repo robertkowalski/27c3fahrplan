@@ -1,12 +1,12 @@
 {
-	"id": "rok.fahrplancongress27c3.webos",
-	"version": "1.0.0",
-	"vendor": "Robert Kowalski",
-	"type": "web",
-	"main": "index.html",
-	"title": "Fahrplan 27C3",
+    "id": "rok.fahrplancongress27c3.webos",
+    "version": "1.0.0",
+    "vendor": "Robert Kowalski",
+    "type": "web",
+    "main": "index.html",
+    "title": "Fahrplan 27C3",
     "noDeprecatedStyles": true,
     "theme": "light",
  
-	"icon": "icon.png"
+    "icon": "icon.png"
 }

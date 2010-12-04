@@ -251,14 +251,19 @@ DayAssistant.prototype.showDetails = function(room){
 }
 
 
-DayAssistant.prototype.openDetailWithId = function(event, room) {
-
-    Mojo.Controller.stageController.pushScene({name:'detail' },
-                                                     {  day: this.day,
-                                                        room: room,
-                                                        detailid: event.index
-                                                     });
-
+DayAssistant.prototype.openDetailWithId = function(event, room){
+    // emptyTimes[this.day][room][countEmpty].id = '0000';
+    if (this.text[this.day][this.chooseRoom][event.index].id != '0000') {
+    
+        Mojo.Controller.stageController.pushScene({
+            name: 'detail'
+        }, {
+            day: this.day,
+            room: room,
+            detailid: event.index
+        });
+    
+    }
 }
 
 
