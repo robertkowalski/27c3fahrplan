@@ -2,29 +2,15 @@ function DetailAssistant(response) {
 	
 	this.day = response.day;
     this.room = response.room;
-    this.detailid = response.detailid.id;
-    
+    this.detailid = response.detailid;
+        
     this.text = Fahrplan.data;
-    
-    var i;
-    for(i=0; i<this.text[this.day][this.room].length; i++){
-        if(this.text[this.day][this.room][i].id){
-            this.content = this.text[this.day][this.room][i];
-            break;
-        }
-    }
+    this.content = this.text[this.day][this.room][this.detailid];
 
 }
 
 DetailAssistant.prototype.setup = function() {
-	/*
-    this.cmdMenuModel = {
-	    visible: true,
-	    items: [
-	        {items:[{label: $L('Add to Favorites'), icon:'new', command:'cmd-add'}]},
-	    ]
-	}; // save delete  
-	*/
+
    
     this.startend = this.controller.get('startend');
     this.headline = this.controller.get('headline');
@@ -42,8 +28,11 @@ DetailAssistant.prototype.setup = function() {
     this.headline.update(this.content.title);
     this.startend.update(today+' - '+this.content.humanstartend);
     this.subtitle.update(this.content.subtitle);
+    this.summary.update(this.content.summary);
+    
+    Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.detailid);
 //@todo:
-//    abstract
+//    
 //    language
 //    color?
 //    persons
@@ -57,11 +46,9 @@ DetailAssistant.prototype.activate = function(event) {
 };
 
 DetailAssistant.prototype.deactivate = function(event) {
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
+	
+
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
 };

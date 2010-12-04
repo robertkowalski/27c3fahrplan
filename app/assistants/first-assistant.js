@@ -74,7 +74,7 @@ FirstAssistant.prototype.cleanup = function(event) {
 
 FirstAssistant.prototype.openMenuItem = function(event) {
     
-    Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day});
+    Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day, room: 0});
 
 };
 

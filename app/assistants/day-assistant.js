@@ -29,6 +29,8 @@ function DayAssistant(response) {
 
 	this.day = response.day;
 	this.date = new Date();  
+	this.chooseRoom = response.room;
+	Mojo.Log.error(response.update);
 	
 }
 
@@ -67,9 +69,6 @@ DayAssistant.prototype.setup = function() {
 	
     this.text = Fahrplan.data;
 
-
-	this.chooseRoom = 0;
-		
 	this.title = this.controller.get('title');
 	this.setTitle(this.chooseRoom);
 	
@@ -85,17 +84,12 @@ DayAssistant.prototype.setup = function() {
             reorderable: false
         },this.menuModel);
 	
+
 	this.saal1 = this.controller.get('saal1');
 	this.saal2 = this.controller.get('saal2');
 	this.saal3 = this.controller.get('saal3');
-	this.openSaal1 = this.handleTap.bind(this, this.saal1);
-	this.openSaal2 = this.handleTap.bind(this, this.saal2);
-	this.openSaal3 = this.handleTap.bind(this, this.saal3);
-	Mojo.Event.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
-	Mojo.Event.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
-	Mojo.Event.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
-	
 }
+
 
 DayAssistant.prototype.activate = function(event) {
 	//just jump to event if the day = current day of event
@@ -112,29 +106,32 @@ DayAssistant.prototype.activate = function(event) {
 			this.chooseSaal();
 		}
 	}
+
+	this.openSaal1 = this.handleTap.bind(this, this.saal1);
+	this.openSaal2 = this.handleTap.bind(this, this.saal2);
+	this.openSaal3 = this.handleTap.bind(this, this.saal3);
+	this.controller.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
+	this.controller.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
+	this.controller.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
+    
+    this.timewidget = this.controller.get("TimeWidget");
     this.showDetails(this.chooseRoom);  
-/*    
-    //make bubbles tapable
-    var room = 0;
-    var detailid, openDetail;
-//    for (room = 0; room < 3; room++) {
-        for (i = 0; i < this.text[this.day][0].length; i++) {
-            detailid = this.controller.get(this.text[this.day][0][i].id); // can just get events of current room/template
-            openDetail = this.openDetailWithId.bind(this, this.day, room, detailid); //PRE-CACHE//
-            Mojo.Event.listen(detailid, Mojo.Event.tap, openDetail);
-        }
-//   }*/
+
 }
+
 
 DayAssistant.prototype.deactivate = function(event) {	
 	Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
 	Mojo.Event.stopListening(this.saal2, Mojo.Event.tap, this.openSaal2);
 	Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	
+
+	Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+
 }
 
+
 DayAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
+
 }
 
 
@@ -156,10 +153,15 @@ DayAssistant.prototype.handleTap= function(element, event) {
 	this.menuModel = {
         items: this.text[this.day][room]
 	}
-	this.controller.setWidgetModel("TimeWidget", this.menuModel);	
+	this.controller.setWidgetModel(this.timewidget, this.menuModel);
+    this.controller.modelChanged(this.menuModel);
+	Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+    this.showDetails(room);
 }
 
+
 DayAssistant.prototype.chooseSaal = function() {
+
 	var thisHour = this.date.getHours();   
 //    Mojo.Log.error(thisHour);	
 	var countroom;
@@ -204,14 +206,17 @@ DayAssistant.prototype.chooseSaal = function() {
         this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
         };
-        this.controller.setWidgetModel("TimeWidget", this.menuModel);	
+        this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
 		this.setTitle(this.chooseRoom);
 		this.revealItem(this.timeID);
         this.showDetails(this.chooseRoom);
 	}	
     return true;			
 }
+
+
 DayAssistant.prototype.setTitle = function(room){
+	
 	switch(room){
 		case 0:	
 			this.title.update('Saal 1');
@@ -223,34 +228,47 @@ DayAssistant.prototype.setTitle = function(room){
 			this.title.update('Saal 3');			
 		break;
 	}
+	
 }	
+
+
 DayAssistant.prototype.revealItem = function(timeID) {	
-	this.controller.setWidgetModel("TimeWidget", this.menuModel);
-	this.timeList = this.controller.get('TimeWidget');
-    Mojo.Log.error('revealItem:'+timeID);
-	this.timeList.mojo.revealItem(timeID, false);
+
+	this.controller.setWidgetModel(this.timewidget, this.menuModel);
+	this.timewidget.mojo.revealItem(timeID, false);
+	
 }
+
 
 DayAssistant.prototype.showDetails = function(room){
-    //make bubbles tapable
-//    var room = 0;
+
     this.room = room;
     
-    var detailid, openDetail;
-   
-    for (i = 0; i < this.text[this.day][this.room].length; i++) {
-        detailid = this.controller.get(this.text[this.day][this.room][i].id); // can just get events of current room/template
-        openDetail = this.openDetailWithId.bind(this, this.day, this.room, detailid); //PRE-CACHE//
-        Mojo.Event.listen(detailid, Mojo.Event.tap, openDetail);
-    }
+    this.openDetailWithIdBind = this.openDetailWithId.bindAsEventListener(this, this.room); //PRE-CACHE//
+    this.controller.listen(this.timewidget, Mojo.Event.listTap,this.openDetailWithIdBind, false);
+    
+    
 }
 
-DayAssistant.prototype.openDetailWithId = function(day, room, event) {
 
-        Mojo.Controller.stageController.pushScene(  { name:'detail' },
-                                                    {   day: day,
+DayAssistant.prototype.openDetailWithId = function(event, room) {
+
+    Mojo.Controller.stageController.pushScene({name:'detail' },
+                                                     {  day: this.day,
                                                         room: room,
-                                                        detailid: event
+                                                        detailid: event.index
                                                      });
 
+}
+
+
+DayAssistant.prototype.update = function(room, id){
+	
+		this.chooseRoom = room;
+        this.menuModel = {
+            items: this.text[this.day][this.chooseRoom]
+        };
+        this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
+		this.revealItem(id);
+		
 }
