@@ -33,24 +33,24 @@ function HelpAssistant() {
 HelpAssistant.prototype.setup = function() {
 
 //without Help Entry //
-	this.controller.setupWidget(Mojo.Menu.appMenu,
-	    this.attributes = {
-	        omitDefaultItems: true
-	    },
-	    this.model = {
-	        visible: true,
-	        items: [ 
-	            
-	            Mojo.Menu.editItem, //has to be first
-	            { label: "Preferences", command: 'do-Prefs' },
-				{ label: "About", command: 'do-About' }
-	        ]
-	    }
-	);
+    this.controller.setupWidget(Mojo.Menu.appMenu,
+        this.attributes = {
+            omitDefaultItems: true
+        },
+        this.model = {
+            visible: true,
+            items: [ 
+                
+                Mojo.Menu.editItem, //has to be first
+                { label: "Preferences", command: 'do-Prefs' },
+                { label: "About", command: 'do-About' }
+            ]
+        }
+    );
     this.showComposeEmail = this.showComposeEmail.bindAsEventListener(this); //PRE-CACHE//
     this.whereCongress = this.whereCongress.bindAsEventListener(this); //PRE-CACHE//
     Mojo.Event.listen(this.controller.get('email'), Mojo.Event.tap, this.showComposeEmail);
-	Mojo.Event.listen(this.controller.get('where'), Mojo.Event.tap, this.whereCongress);
+    Mojo.Event.listen(this.controller.get('where'), Mojo.Event.tap, this.whereCongress);
 }
 
 HelpAssistant.prototype.activate = function(event) {
@@ -60,8 +60,8 @@ HelpAssistant.prototype.activate = function(event) {
 
 HelpAssistant.prototype.deactivate = function(event) {
 
-	Mojo.Event.stopListening(this.controller.get('email'), Mojo.Event.listTap, this.showComposeEmail.bind(this));    
-	Mojo.Event.stopListening(this.controller.get('where'), Mojo.Event.listTap, this.whereCongress.bind(this));    
+    Mojo.Event.stopListening(this.controller.get('email'), Mojo.Event.listTap, this.showComposeEmail.bind(this));    
+    Mojo.Event.stopListening(this.controller.get('where'), Mojo.Event.listTap, this.whereCongress.bind(this));    
 
 }
 
@@ -70,30 +70,30 @@ HelpAssistant.prototype.cleanup = function(event) {
 }
 
 HelpAssistant.prototype.showComposeEmail = function(bind){
-		this.controller.serviceRequest('palm://com.palm.applicationManager', {
-			method: 'open',
-			parameters: {
-				id: 'com.palm.app.email',
-				params: {
-					summary: "Congress-App Support Ticket",
-					text: "Hi Robert \n",
-					recipients: [{
-						value : "palm.webos.apps@googlemail.com",
-						contactDisplay : 'Congress-App Supportticket'
-					}]															
-				}				
-			}
-		});
+        this.controller.serviceRequest('palm://com.palm.applicationManager', {
+            method: 'open',
+            parameters: {
+                id: 'com.palm.app.email',
+                params: {
+                    summary: "Congress-App Support Ticket",
+                    text: "Hi Robert \n",
+                    recipients: [{
+                        value : "palm.webos.apps@googlemail.com",
+                        contactDisplay : 'Congress-App Supportticket'
+                    }]															
+                }				
+            }
+        });
 }
 
 HelpAssistant.prototype.whereCongress = function(bind){
-	this.controller.serviceRequest('palm://com.palm.applicationManager', {
-		method: 'launch',
-		parameters: {
-			id: "com.palm.app.maps",
-			params: {
-				"query": 'Alexanderstr. 11, 10178 Berlin, Germany'
-			}
-		}
-	});
+    this.controller.serviceRequest('palm://com.palm.applicationManager', {
+        method: 'launch',
+        parameters: {
+            id: "com.palm.app.maps",
+            params: {
+                "query": 'Alexanderstr. 11, 10178 Berlin, Germany'
+            }
+        }
+    });
 };

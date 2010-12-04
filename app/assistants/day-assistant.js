@@ -27,11 +27,11 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 function DayAssistant(response) {
 
-	this.day = response.day;
-	this.date = new Date();  
-	this.chooseRoom = response.room;
-	Mojo.Log.error(response.update);
-	
+    this.day = response.day;
+    this.date = new Date();  
+    this.chooseRoom = response.room;
+    Mojo.Log.error(response.update);
+    
 }
 
 DayAssistant.prototype.setup = function() {
@@ -50,7 +50,7 @@ DayAssistant.prototype.setup = function() {
          this.model = {
              label : $L('Saal 2'),
              disabled: false
-			 
+             
          }
      );
      this.controller.setupWidget("saal3",
@@ -62,17 +62,17 @@ DayAssistant.prototype.setup = function() {
          }
      );
 
-	this.cmdMenuModel = {
- 		visible: true,
- 		items: [{}, this.reloadModel]
+    this.cmdMenuModel = {
+        visible: true,
+        items: [{}, this.reloadModel]
      };
-	
+    
     this.text = Fahrplan.data;
 
-	this.title = this.controller.get('title');
-	this.setTitle(this.chooseRoom);
-	
-	this.menuModel = {
+    this.title = this.controller.get('title');
+    this.setTitle(this.chooseRoom);
+    
+    this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
     };
 
@@ -83,36 +83,36 @@ DayAssistant.prototype.setup = function() {
             renderLimit: 50,
             reorderable: false
         },this.menuModel);
-	
+    
 
-	this.saal1 = this.controller.get('saal1');
-	this.saal2 = this.controller.get('saal2');
-	this.saal3 = this.controller.get('saal3');
+    this.saal1 = this.controller.get('saal1');
+    this.saal2 = this.controller.get('saal2');
+    this.saal3 = this.controller.get('saal3');
 }
 
 
 DayAssistant.prototype.activate = function(event) {
-	//just jump to event if the day = current day of event
-	dateArr = [];
-	var today = this.date.getDate()+this.date.getMonth()+this.date.getFullYear();
+    //just jump to event if the day = current day of event
+    dateArr = [];
+    var today = this.date.getDate()+this.date.getMonth()+this.date.getFullYear();
 //    today = '29122010';
-	dateArr[0] = '27122010';
-	dateArr[1] = '28122010';
-	dateArr[2] = '29122010';
-	dateArr[3] = '30122010';
-	
-	if(dateArr.join().indexOf(today)>=0) {
-		if(dateArr[Number(this.day)] == today){
-			this.chooseSaal();
-		}
-	}
+    dateArr[0] = '27122010';
+    dateArr[1] = '28122010';
+    dateArr[2] = '29122010';
+    dateArr[3] = '30122010';
+    
+    if(dateArr.join().indexOf(today)>=0) {
+        if(dateArr[Number(this.day)] == today){
+            this.chooseSaal();
+        }
+    }
 
-	this.openSaal1 = this.handleTap.bind(this, this.saal1);
-	this.openSaal2 = this.handleTap.bind(this, this.saal2);
-	this.openSaal3 = this.handleTap.bind(this, this.saal3);
-	this.controller.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
-	this.controller.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
-	this.controller.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
+    this.openSaal1 = this.handleTap.bind(this, this.saal1);
+    this.openSaal2 = this.handleTap.bind(this, this.saal2);
+    this.openSaal3 = this.handleTap.bind(this, this.saal3);
+    this.controller.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
+    this.controller.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
+    this.controller.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
     
     this.timewidget = this.controller.get("TimeWidget");
     this.showDetails(this.chooseRoom);  
@@ -121,11 +121,11 @@ DayAssistant.prototype.activate = function(event) {
 
 
 DayAssistant.prototype.deactivate = function(event) {	
-	Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
-	Mojo.Event.stopListening(this.saal2, Mojo.Event.tap, this.openSaal2);
-	Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	
+    Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
+    Mojo.Event.stopListening(this.saal2, Mojo.Event.tap, this.openSaal2);
+    Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	
 
-	Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+    Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
 
 }
 
@@ -136,107 +136,107 @@ DayAssistant.prototype.cleanup = function(event) {
 
 
 DayAssistant.prototype.handleTap= function(element, event) {
-	switch(element.id){
-		case 'saal1':
-			var room = 0;
-			this.title.update('Saal 1');
-		break;
-		case 'saal2':
-			var room = 1;
-			this.title.update('Saal 2');			
-		break;
-		case 'saal3':
-			var room = 2;
-			this.title.update('Saal 3');			
-		break;
-	}
-	this.menuModel = {
+    switch(element.id){
+        case 'saal1':
+            var room = 0;
+            this.title.update('Saal 1');
+        break;
+        case 'saal2':
+            var room = 1;
+            this.title.update('Saal 2');			
+        break;
+        case 'saal3':
+            var room = 2;
+            this.title.update('Saal 3');			
+        break;
+    }
+    this.menuModel = {
         items: this.text[this.day][room]
-	}
-	this.controller.setWidgetModel(this.timewidget, this.menuModel);
+    }
+    this.controller.setWidgetModel(this.timewidget, this.menuModel);
     this.controller.modelChanged(this.menuModel);
-	Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+    Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
     this.showDetails(room);
 }
 
 
 DayAssistant.prototype.chooseSaal = function() {
 
-	var thisHour = this.date.getHours();   
+    var thisHour = this.date.getHours();   
 //    Mojo.Log.error(thisHour);	
-	var countroom;
+    var countroom;
     
-	for (countroom = 2; countroom > -1; countroom--) {
-		for (i = 0; i < this.text[this.day][countroom].length; i++) {
-			if (this.text[this.day][countroom][i].hourid == thisHour) {
-				this.chooseRoom = countroom;
-				this.timeID = i;
+    for (countroom = 2; countroom > -1; countroom--) {
+        for (i = 0; i < this.text[this.day][countroom].length; i++) {
+            if (this.text[this.day][countroom][i].hourid == thisHour) {
+                this.chooseRoom = countroom;
+                this.timeID = i;
                 break;
-			}
-		}
+            }
+        }
         if (this.timeID) {
             break;
         }    
-	} //max 2hrs for next events if currently no event
-	
-	if(!this.timeID){
-		thisHour = thisHour+1;
-		for (countroom = 2; countroom > -1; countroom--) {
-			for (i = 0; i < this.text[this.day][countroom].length; i++) { 
-				if (this.text[this.day][countroom][i].hourid == thisHour) {
-					this.chooseRoom = countroom;
-					this.timeID = this.text[this.day][countroom][i].hourid;
-				}
-			}
-		}
-	}	
-	if(!this.timeID){
-		thisHour = thisHour+2;
-		for (countroom = 2; countroom > -1; countroom--) {
-			for (i = 0; i < this.text[this.day][countroom].length; i++) { 
-				if (this.text[this.day][countroom][i].hourid == thisHour) {
-					this.chooseRoom = countroom;
-					this.timeID = this.text[this.day][countroom][i].hourid;
-				}
-			}
-		}
-	}	
+    } //max 2hrs for next events if currently no event
+    
+    if(!this.timeID){
+        thisHour = thisHour+1;
+        for (countroom = 2; countroom > -1; countroom--) {
+            for (i = 0; i < this.text[this.day][countroom].length; i++) { 
+                if (this.text[this.day][countroom][i].hourid == thisHour) {
+                    this.chooseRoom = countroom;
+                    this.timeID = this.text[this.day][countroom][i].hourid;
+                }
+            }
+        }
+    }	
+    if(!this.timeID){
+        thisHour = thisHour+2;
+        for (countroom = 2; countroom > -1; countroom--) {
+            for (i = 0; i < this.text[this.day][countroom].length; i++) { 
+                if (this.text[this.day][countroom][i].hourid == thisHour) {
+                    this.chooseRoom = countroom;
+                    this.timeID = this.text[this.day][countroom][i].hourid;
+                }
+            }
+        }
+    }	
 //   Mojo.Log.error('timeid: '+this.timeID);
-	if (this.timeID) {
+    if (this.timeID) {
         this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
         };
         this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
-		this.setTitle(this.chooseRoom);
-		this.revealItem(this.timeID);
+        this.setTitle(this.chooseRoom);
+        this.revealItem(this.timeID);
         this.showDetails(this.chooseRoom);
-	}	
+    }	
     return true;			
 }
 
 
 DayAssistant.prototype.setTitle = function(room){
-	
-	switch(room){
-		case 0:	
-			this.title.update('Saal 1');
-		break;
-		case 1:
-			this.title.update('Saal 2');			
-		break;
-		case 2:
-			this.title.update('Saal 3');			
-		break;
-	}
-	
+    
+    switch(room){
+        case 0:	
+            this.title.update('Saal 1');
+        break;
+        case 1:
+            this.title.update('Saal 2');			
+        break;
+        case 2:
+            this.title.update('Saal 3');			
+        break;
+    }
+    
 }	
 
 
 DayAssistant.prototype.revealItem = function(timeID) {	
 
-	this.controller.setWidgetModel(this.timewidget, this.menuModel);
-	this.timewidget.mojo.revealItem(timeID, false);
-	
+    this.controller.setWidgetModel(this.timewidget, this.menuModel);
+    this.timewidget.mojo.revealItem(timeID, false);
+    
 }
 
 
@@ -263,12 +263,12 @@ DayAssistant.prototype.openDetailWithId = function(event, room) {
 
 
 DayAssistant.prototype.update = function(room, id){
-	
-		this.chooseRoom = room;
+    
+        this.chooseRoom = room;
         this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
         };
         this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
-		this.revealItem(id);
-		
+        this.revealItem(id);
+        
 }

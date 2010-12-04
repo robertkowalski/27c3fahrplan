@@ -1,6 +1,6 @@
 function DetailAssistant(response) {
-	
-	this.day = response.day;
+    
+    this.day = response.day;
     this.room = response.room;
     this.detailid = response.detailid;
         
@@ -10,18 +10,17 @@ function DetailAssistant(response) {
 }
 
 DetailAssistant.prototype.setup = function() {
-
-   
+ 
     this.startend = this.controller.get('startend');
     this.headline = this.controller.get('headline');
     this.subtitle = this.controller.get('subtitle');
     this.summary = this.controller.get('summary');
     
     dateArr = [];
-	dateArr[0] = '27.12.2010';
-	dateArr[1] = '28.12.2010';
-	dateArr[2] = '29.12.2010';
-	dateArr[3] = '30.12.2010';
+    dateArr[0] = '27.12.2010';
+    dateArr[1] = '28.12.2010';
+    dateArr[2] = '29.12.2010';
+    dateArr[3] = '30.12.2010';
     
     var today = dateArr[this.day]; 
     
@@ -41,12 +40,12 @@ DetailAssistant.prototype.setup = function() {
 };
 
 DetailAssistant.prototype.activate = function(event) {
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
+    /* put in event handlers here that should only be in effect when this scene is active. For
+       example, key handlers that are observing the document */
 };
 
 DetailAssistant.prototype.deactivate = function(event) {
-	
+    
 
 };
 
