@@ -88,7 +88,7 @@ DayAssistant.prototype.setup = function() {
     this.saal1 = this.controller.get('saal1');
     this.saal2 = this.controller.get('saal2');
     this.saal3 = this.controller.get('saal3');
-}
+};
 
 
 DayAssistant.prototype.activate = function(event) {
@@ -116,8 +116,7 @@ DayAssistant.prototype.activate = function(event) {
     
     this.timewidget = this.controller.get("TimeWidget");
     this.showDetails(this.chooseRoom);  
-
-}
+};
 
 
 DayAssistant.prototype.deactivate = function(event) {	
@@ -126,13 +125,12 @@ DayAssistant.prototype.deactivate = function(event) {
     Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	
 
     Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
-
-}
+};
 
 
 DayAssistant.prototype.cleanup = function(event) {
 
-}
+};
 
 
 DayAssistant.prototype.handleTap= function(element, event) {
@@ -157,7 +155,7 @@ DayAssistant.prototype.handleTap= function(element, event) {
     this.controller.modelChanged(this.menuModel);
     Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
     this.showDetails(room);
-}
+};
 
 
 DayAssistant.prototype.chooseSaal = function() {
@@ -212,7 +210,7 @@ DayAssistant.prototype.chooseSaal = function() {
         this.showDetails(this.chooseRoom);
     }	
     return true;			
-}
+};
 
 
 DayAssistant.prototype.setTitle = function(room){
@@ -229,15 +227,14 @@ DayAssistant.prototype.setTitle = function(room){
         break;
     }
     
-}	
+};	
 
 
 DayAssistant.prototype.revealItem = function(timeID) {	
 
     this.controller.setWidgetModel(this.timewidget, this.menuModel);
     this.timewidget.mojo.revealItem(timeID, false);
-    
-}
+};
 
 
 DayAssistant.prototype.showDetails = function(room){
@@ -246,9 +243,7 @@ DayAssistant.prototype.showDetails = function(room){
     
     this.openDetailWithIdBind = this.openDetailWithId.bindAsEventListener(this, this.room); //PRE-CACHE//
     this.controller.listen(this.timewidget, Mojo.Event.listTap,this.openDetailWithIdBind, false);
-    
-    
-}
+};
 
 
 DayAssistant.prototype.openDetailWithId = function(event, room){
@@ -264,7 +259,7 @@ DayAssistant.prototype.openDetailWithId = function(event, room){
         });
     
     }
-}
+};
 
 
 DayAssistant.prototype.update = function(room, id){
@@ -274,6 +269,5 @@ DayAssistant.prototype.update = function(room, id){
             items: this.text[this.day][this.chooseRoom]
         };
         this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
-        this.revealItem(id);
-        
-}
+        this.revealItem(id);    
+};

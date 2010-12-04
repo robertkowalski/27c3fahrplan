@@ -55,26 +55,24 @@ FirstAssistant.prototype.setup = function(){
     });
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
-}
+};
 
 FirstAssistant.prototype.activate = function(event) {
     this.controller.listen("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
-}
+};
 
 
 FirstAssistant.prototype.deactivate = function(event) {
     this.controller.stopListening("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
-
-}
+};
 
 FirstAssistant.prototype.cleanup = function(event) {
    
    
-}
+};
 
 FirstAssistant.prototype.openMenuItem = function(event) {
     
     Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day, room: 0});
-
 };
 

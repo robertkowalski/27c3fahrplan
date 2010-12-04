@@ -51,23 +51,22 @@ HelpAssistant.prototype.setup = function() {
     this.whereCongress = this.whereCongress.bindAsEventListener(this); //PRE-CACHE//
     Mojo.Event.listen(this.controller.get('email'), Mojo.Event.tap, this.showComposeEmail);
     Mojo.Event.listen(this.controller.get('where'), Mojo.Event.tap, this.whereCongress);
-}
+};
 
 HelpAssistant.prototype.activate = function(event) {
 
-}
+};
 
 
 HelpAssistant.prototype.deactivate = function(event) {
 
     Mojo.Event.stopListening(this.controller.get('email'), Mojo.Event.listTap, this.showComposeEmail.bind(this));    
     Mojo.Event.stopListening(this.controller.get('where'), Mojo.Event.listTap, this.whereCongress.bind(this));    
-
-}
+};
 
 HelpAssistant.prototype.cleanup = function(event) {
 
-}
+};
 
 HelpAssistant.prototype.showComposeEmail = function(bind){
         this.controller.serviceRequest('palm://com.palm.applicationManager', {
@@ -84,7 +83,7 @@ HelpAssistant.prototype.showComposeEmail = function(bind){
                 }				
             }
         });
-}
+};
 
 HelpAssistant.prototype.whereCongress = function(bind){
     this.controller.serviceRequest('palm://com.palm.applicationManager', {

@@ -10,20 +10,9 @@ function DetailAssistant(response) {
 
 }
 
+
 DetailAssistant.prototype.setup = function() {
- /*
-    this.startend = this.controller.get('startend');
-    this.headline = this.controller.get('headline');
-    this.subtitle = this.controller.get('subtitle');
-    this.summary = this.controller.get('summary');
-   */ 
    
-/*    
-    this.headline.update(this.content.title);
-    this.startend.update(today+' - '+this.content.humanstartend);
-    this.subtitle.update(this.content.subtitle);
-    this.summary.update(this.content.summary);
- */   
     Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.detailid);
 
     this.detailModel = {
@@ -37,9 +26,23 @@ DetailAssistant.prototype.setup = function() {
             renderLimit: 50,
             reorderable: false
         },this.detailModel);
+        
+        
+    this.buttonModel = {
+         "label" : "Add to Favorites",
+         "buttonClass" : "",
+         "disabled" : false
+     };
+    //set up the button
+    this.controller.setupWidget('UpdateButton', this.buttonAttributes, this.buttonModel); 
+    this.favButton = this.controller.get('Favorites');
+    this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
+    Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
 };
 
+
 DetailAssistant.prototype.activate = function(event) {
+    
     this.dayId = this.controller.get('day');
     
     dateArr = [];
@@ -48,13 +51,18 @@ DetailAssistant.prototype.activate = function(event) {
     dateArr[2] = '29.12.2010';
     dateArr[3] = '30.12.2010';
     var today = dateArr[this.day]; 
-    this.dayId.update(today);
+    this.dayId.update(today); 
 };
+
 
 DetailAssistant.prototype.deactivate = function(event) {
     
-
+	Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	   
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
+};
+
+DetailAssistant.prototype.addToFavorites = function(event){
+    
 };

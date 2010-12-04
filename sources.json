@@ -17,5 +17,9 @@
     {
         "scenes": "detail",
         "source": "app/assistants/detail-assistant.js"
+    },
+    {
+        "scenes": "favorites",
+        "source": "app/assistants/favorites-assistant.js"
     }
 ]
