@@ -30,7 +30,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 FavoritesAssistant.prototype.processResults = function(inResults){
 
         this.favmodel = [];
-        if (inResults) {
+        if (inResults.length > 0) {
             for (i = 0; i < inResults.length; i++) {
                 this.favmodel[i] =[];
                 this.favmodel[i]['title'] = this.text[inResults[i].day][inResults[i].room][inResults[i].eventindex]['title'];
@@ -39,6 +39,7 @@ FavoritesAssistant.prototype.processResults = function(inResults){
                 this.favmodel[i]['eventindex'] = inResults[i].eventindex;
             }
         } else {
+            this.favmodel[0] =[];
             this.favmodel[0]['title'] = 'No Favorites saved';
         }
         this.menuModel = {

@@ -1,6 +1,6 @@
 // Create DB if not exists
 
-var name = "ext:27c3_";
+var name = "ext:27c3_v";
 var version = "0.1";  
 var displayName = "New2 27C3 Favorites DB"; 
 var size = 200000;  
