@@ -2,6 +2,7 @@
     {"source": "app/assistants/stage-assistant.js"},
     {"source": "app/models/first.js"},
     {"source": "app/models/fahrplan.js"},
+    {"source": "app/models/sql-func.js"},
     {
         "scenes": "first",
         "source": "app/assistants/first-assistant.js"

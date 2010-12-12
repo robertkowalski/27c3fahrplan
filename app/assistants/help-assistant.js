@@ -75,7 +75,7 @@ HelpAssistant.prototype.showComposeEmail = function(bind){
                 id: 'com.palm.app.email',
                 params: {
                     summary: "Congress-App Support Ticket",
-                    text: "Hi Robert \n",
+                    text: "Hi Robert, \n",
                     recipients: [{
                         value : "palm.webos.apps@googlemail.com",
                         contactDisplay : 'Congress-App Supportticket'

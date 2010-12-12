@@ -54,16 +54,32 @@ FirstAssistant.prototype.setup = function(){
         items: Congress.menu
     });
     
+    this.buttonModel = {
+         "label" : "Show Favorites",
+         "buttonClass" : "",
+         "disabled" : false
+     };
+    //set up the button
+    this.controller.setupWidget('FavoritesButton', this.buttonModel); 
+    this.favButton = this.controller.get('FavoritesButton');
+    this.openFavs = this.openFavorites.bindAsEventListener(this); 
+    
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
+    
+    this.menuWidget = this.controller.get('MenuWidget');
 };
 
 FirstAssistant.prototype.activate = function(event) {
-    this.controller.listen("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
+    this.controller.listen(this.menuWidget, Mojo.Event.listTap,this.openMenuItem);
+    this.controller.listen(this.favButton, Mojo.Event.tap, this.openFavs);
+
 };
 
 
 FirstAssistant.prototype.deactivate = function(event) {
-    this.controller.stopListening("MenuWidget", Mojo.Event.listTap,this.openMenuItem);
+    this.controller.stopListening(this.menuWidget, Mojo.Event.listTap,this.openMenuItem);
+    this.controller.stopListening(this.favButton, Mojo.Event.tap,this.openFavs);
+
 };
 
 FirstAssistant.prototype.cleanup = function(event) {
@@ -74,5 +90,12 @@ FirstAssistant.prototype.cleanup = function(event) {
 FirstAssistant.prototype.openMenuItem = function(event) {
     
     Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day, room: 0});
+};
+
+FirstAssistant.prototype.openFavorites = function(event) {
+    
+    Mojo.Controller.stageController.pushScene({
+        name: "favorites"
+    });
 };
 

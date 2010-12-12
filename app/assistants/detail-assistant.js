@@ -12,7 +12,20 @@ function DetailAssistant(response) {
 
 
 DetailAssistant.prototype.setup = function() {
-   
+
+    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
+        omitDefaultItems: true
+    }, this.model = {
+        visible: true,
+        items: [Mojo.Menu.editItem, {
+            label: "Help",
+            command: "do-helpAddSub"
+        }, {
+            label: "About",
+            command: 'do-About'
+        }]
+    });
+
     Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.detailid);
 
     this.detailModel = {
@@ -34,8 +47,8 @@ DetailAssistant.prototype.setup = function() {
          "disabled" : false
      };
     //set up the button
-    this.controller.setupWidget('UpdateButton', this.buttonAttributes, this.buttonModel); 
-    this.favButton = this.controller.get('Favorites');
+    this.controller.setupWidget('FavoritesButton', this.buttonModel); 
+    this.favButton = this.controller.get('FavoritesButton');
     this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
     Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
 };
@@ -57,12 +70,14 @@ DetailAssistant.prototype.activate = function(event) {
 
 DetailAssistant.prototype.deactivate = function(event) {
     
-	Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	   
+	Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);	   
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
 };
 
 DetailAssistant.prototype.addToFavorites = function(event){
-    
+  // day -> room -> eventindex -> eventid
+  test.writeFav(this.day, this.room, this.detailid, this.content[0].id);
+  
 };

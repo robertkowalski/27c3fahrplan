@@ -1,3 +1,26 @@
+/*
+.day-scene-fade-bottom {
+    
+}
+
+.day-footer-spacer {
+    padding-bottom:10px;
+}
+
+.day-footer{
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    -webkit-border-image: url(../images/fade-bottom.png) 35 0 0 0 repeat repeat;
+    border-width: 35px 0px 0px 0px;
+    -webkit-palm-mouse-target: ignore;
+}
+
+.day-footer-wrapper {
+    margin-top:10px;
+}
+*/
 .italic {
     font-style:italic;
 }

@@ -1,4 +1,6 @@
 Congress = {};
+
+
 Congress.menu = [
         {
             title: $L("Day 1"),
@@ -24,6 +26,11 @@ Congress.menu = [
             scene: 'day',
             day: 3
         }
-    ];	
-    
+    ];	 
+Favs = {}; 
+Favs.menu = [
+        {
+            title: $L("Favorites")
+        }
+    ];	   
     

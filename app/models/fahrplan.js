@@ -20,6 +20,7 @@ for(this.day = 0; this.day < 4; this.day++){
         for (i = 0; i < this.text[this.day][room].length - 1; i++) {
             //borders for bubbles
             this.text[this.day][room][i].color =  this.text[this.day][room][i].color + ';border:1px solid black;';
+            this.text[this.day][room][i].feedback = 'immediate';
             //create empty times for template
             if (this.text[this.day][room][i].ending < this.text[this.day][room][i + 1].start) {
                 emptyTimes[this.day][room][countEmpty] = [];
@@ -36,6 +37,7 @@ for(this.day = 0; this.day < 4; this.day++){
                 emptyTimes[this.day][room][countEmpty].humanstartend = '';
                 emptyTimes[this.day][room][countEmpty].hourid = 'n';
                 emptyTimes[this.day][room][countEmpty].id = '0000';
+                emptyTimes[this.day][room][countEmpty].feedback = 'none';
                 countEmpty++;
             }
         }

@@ -29,13 +29,24 @@ function DayAssistant(response) {
 
     this.day = response.day;
     this.date = new Date();  
-    this.chooseRoom = response.room;
-    Mojo.Log.error(response.update);
-    
+    this.chooseRoom = response.room;   
 }
 
 DayAssistant.prototype.setup = function() {
     
+    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
+        omitDefaultItems: true
+    }, this.model = {
+        visible: true,
+        items: [Mojo.Menu.editItem, {
+            label: "Help",
+            command: "do-helpAddSub"
+        }, {
+            label: "About",
+            command: 'do-About'
+        }]
+    });
+        
      this.controller.setupWidget("saal1",
          this.attributes = {
              },
@@ -268,6 +279,6 @@ DayAssistant.prototype.update = function(room, id){
         this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
         };
-        this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
+        this.controller.setWidgetModel(this.timewidget, this.menuModel);	
         this.revealItem(id);    
 };
