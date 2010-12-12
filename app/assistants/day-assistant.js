@@ -215,7 +215,7 @@ DayAssistant.prototype.chooseSaal = function() {
         this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
         };
-        this.controller.setWidgetModel(this.controller.get("TimeWidget"), this.menuModel);	
+        this.controller.setWidgetModel(this.timewidget, this.menuModel);	
         this.setTitle(this.chooseRoom);
         this.revealItem(this.timeID);
         this.showDetails(this.chooseRoom);
@@ -253,7 +253,7 @@ DayAssistant.prototype.showDetails = function(room){
     this.room = room;
     
     this.openDetailWithIdBind = this.openDetailWithId.bindAsEventListener(this, this.room); //PRE-CACHE//
-    this.controller.listen(this.timewidget, Mojo.Event.listTap,this.openDetailWithIdBind, false);
+    this.controller.listen(this.timewidget, Mojo.Event.listTap,this.openDetailWithIdBind);
 };
 
 

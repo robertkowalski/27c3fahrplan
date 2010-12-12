@@ -51,6 +51,8 @@ DetailAssistant.prototype.setup = function() {
     this.favButton = this.controller.get('FavoritesButton');
     this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
     Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
+    
+    
 };
 
 
@@ -65,6 +67,8 @@ DetailAssistant.prototype.activate = function(event) {
     dateArr[3] = '30.12.2010';
     var today = dateArr[this.day]; 
     this.dayId.update(today); 
+    
+    DBAss.checkFavs(this.readFromFavorites.bind(this),this.day,this.room,this.detailid); 
 };
 
 
@@ -78,6 +82,24 @@ DetailAssistant.prototype.cleanup = function(event) {
 
 DetailAssistant.prototype.addToFavorites = function(event){
   // day -> room -> eventindex -> eventid
-  test.writeFav(this.day, this.room, this.detailid, this.content[0].id);
+  DBAss.writeFav(this.day, this.room, this.detailid, this.content[0].id);
+  //...change button model
+};
+
+DetailAssistant.prototype.readFromFavorites = function(inResult){
+    
+    Mojo.Log.error(inResult);
+    if(inResult){
+        this.buttonModel.label = "Remove from Favorites";
+        this.buttonModel = {
+             "label" : "Remove from Favorites",
+             "buttonClass" : "",
+             "disabled" : false
+         };
+        
+        this.controller.setWidgetModel(this.favButton, this.buttonModel);
+        this.controller.modelChanged(this.buttonModel);
+    }
+ 
   
 };

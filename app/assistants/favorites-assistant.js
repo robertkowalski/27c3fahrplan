@@ -34,6 +34,9 @@ FavoritesAssistant.prototype.processResults = function(inResults){
             for (i = 0; i < inResults.length; i++) {
                 this.favmodel[i] =[];
                 this.favmodel[i]['title'] = this.text[inResults[i].day][inResults[i].room][inResults[i].eventindex]['title'];
+                this.favmodel[i]['day'] = inResults[i].day;
+                this.favmodel[i]['room'] = inResults[i].room;
+                this.favmodel[i]['eventindex'] = inResults[i].eventindex;
             }
         } else {
             this.favmodel[0]['title'] = 'No Favorites saved';
@@ -41,21 +44,37 @@ FavoritesAssistant.prototype.processResults = function(inResults){
         this.menuModel = {
             items: this.favmodel
         };
-	 
+	  //  Mojo.Log.error('eventindex'+inResults[i].eventindex);
+         
         this.controller.setWidgetModel(this.favwidget, this.menuModel);
         this.controller.modelChanged(this.menuModel);
+        
+        this.openDetailWithIdBind = this.handleTap.bindAsEventListener(this); //PRE-CACHE//
+        this.controller.listen(this.favwidget, Mojo.Event.listTap,this.openDetailWithIdBind);
+
 }
 
 FavoritesAssistant.prototype.handleTap = function(event){
+    
+    var day = this.favmodel[event.index]['day'];
+    var room = this.favmodel[event.index]['room'];
+    var index = this.favmodel[event.index]['eventindex'];
+    Mojo.Log.error(event.index);
+    Mojo.Controller.stageController.pushScene({
+            name: 'detail'
+        }, {
+            day: day,
+            room: room,
+            detailid: index
+        });
 
 }    
 
 FavoritesAssistant.prototype.deactivate = function(event) {
-    /* remove any event handlers you added in activate and do any other cleanup that should happen before
-       this scene is popped or another scene is pushed on top */
+    Mojo.Event.stopListening(this.favwidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+
 };
 
 FavoritesAssistant.prototype.cleanup = function(event) {
-    /* this function should do any cleanup needed before the scene is destroyed as 
-       a result of being popped off the scene stack */
+
 };

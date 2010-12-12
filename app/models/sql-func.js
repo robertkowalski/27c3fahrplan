@@ -1,8 +1,8 @@
 // Create DB if not exists
 
-var name = "ext:27c3";
+var name = "ext:27c3_";
 var version = "0.1";  
-var displayName = "New 27C3 Favorites DB"; 
+var displayName = "New2 27C3 Favorites DB"; 
 var size = 200000;  
  
 var db = openDatabase(name, version, displayName, size);
@@ -52,19 +52,46 @@ myTable = Class.create({
             transaction.executeSql(sql,  [day, room, eventindex, eventid], 
                 function(transaction, results) {    // success handler
                     Mojo.Log.info("Successfully inserted record"); 
-                },
+                }.bind(this),
                 function(transaction, error) {      // error handler
                     Mojo.Log.error("Could not insert record: " + error.message);
-                }
+                }.bind(this)
           );
         });  
-    }
+    },
+    checkFavs: function(callback, day, room, eventindex) { 
+        var sql = "SELECT * FROM 'my_table' WHERE day = "+day+" AND room ="+room+" AND eventindex = "+eventindex;
+        this.db.transaction(function(transaction) {
+            transaction.executeSql(sql, [],
+                function(transaction, results) {  
+                    var row;
+                    var result = [];
+                    for (var i = 0; i < results.rows.length; i++) {
+                        result[i] = results.rows.item(i);
+                    }                         
+                    callback(result);
+                }.bind(this),
+                function(transaction, error) {
+                    Mojo.Log.error("Could not read: " + error.message);
+                }.bind(this)
+            );
+        }); 
+    
+    },
+    removeFav: function(callback, day, room, eventindex){
+        var sql = "DELETE FROM 'my_table' WHERE day = "+day+" AND room ="+room+" AND eventindex = "+eventindex;
+        this.db.transaction(function(transaction) {
+            transaction.executeSql(sql, [],
+                function(transaction, results) {    // success handler
+                    Mojo.Log.info("Successfully deleted record"); 
+                }.bind(this),
+                function(transaction, error) {
+                    Mojo.Log.error("Could not read: " + error.message);
+                }.bind(this)
+            );
+        }); 
+    }    
 });
 
   
 var DBAss = new myTable(db);
-
-//test.writeFav(0, 2, 1337);
-
-
-
