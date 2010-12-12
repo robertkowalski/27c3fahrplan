@@ -147,25 +147,25 @@ DayAssistant.prototype.cleanup = function(event) {
 DayAssistant.prototype.handleTap= function(element, event) {
     switch(element.id){
         case 'saal1':
-            var room = 0;
+            this.chooseRoom = 0;
             this.title.update('Saal 1');
         break;
         case 'saal2':
-            var room = 1;
+            this.chooseRoom = 1;
             this.title.update('Saal 2');			
         break;
         case 'saal3':
-            var room = 2;
+            this.chooseRoom = 2;
             this.title.update('Saal 3');			
         break;
     }
     this.menuModel = {
-        items: this.text[this.day][room]
+        items: this.text[this.day][this.chooseRoom]
     }
     this.controller.setWidgetModel(this.timewidget, this.menuModel);
     this.controller.modelChanged(this.menuModel);
     Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
-    this.showDetails(room);
+    this.showDetails(this.chooseRoom);
 };
 
 
@@ -218,9 +218,9 @@ DayAssistant.prototype.chooseSaal = function() {
         this.controller.setWidgetModel(this.timewidget, this.menuModel);	
         this.setTitle(this.chooseRoom);
         this.revealItem(this.timeID);
-        this.showDetails(this.chooseRoom);
+        this.showDetails.bind(this.chooseRoom);
     }	
-    return true;			
+			
 };
 
 
@@ -259,7 +259,7 @@ DayAssistant.prototype.showDetails = function(room){
 
 DayAssistant.prototype.openDetailWithId = function(event, room){
     // emptyTimes[this.day][room][countEmpty].id = '0000';
-    if (this.text[this.day][this.chooseRoom][event.index].id != '0000') {
+    if (this.text[this.day][this.chooseRoom][event.index].color != 'transparent') {
     
         Mojo.Controller.stageController.pushScene({
             name: 'detail'

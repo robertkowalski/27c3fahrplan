@@ -49,8 +49,9 @@ DetailAssistant.prototype.setup = function() {
     //set up the button
     this.controller.setupWidget('FavoritesButton', this.buttonModel); 
     this.favButton = this.controller.get('FavoritesButton');
+    this.controller.setWidgetModel(this.favButton, this.buttonModel);
     this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
-    Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
+    
     
     
 };
@@ -73,8 +74,10 @@ DetailAssistant.prototype.activate = function(event) {
 
 
 DetailAssistant.prototype.deactivate = function(event) {
-    
-	Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);	   
+	if(Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs)) {
+        Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);
+    }
+    //Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);	   
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
@@ -88,18 +91,24 @@ DetailAssistant.prototype.addToFavorites = function(event){
 
 DetailAssistant.prototype.readFromFavorites = function(inResult){
     
-    Mojo.Log.error(inResult);
-    if(inResult){
-        this.buttonModel.label = "Remove from Favorites";
-        this.buttonModel = {
-             "label" : "Remove from Favorites",
-             "buttonClass" : "",
-             "disabled" : false
-         };
+    if(inResult.length > 0){
+        Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs); 
+        this.remFromFavs = this.deleteFromFavorites.bindAsEventListener(this); 
+        Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.remFromFavs);    
+    
+    } else { // just deleted and want to readd
+        if (this.remFromFavs) {
+            Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
+        }
+        Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
         
-        this.controller.setWidgetModel(this.favButton, this.buttonModel);
-        this.controller.modelChanged(this.buttonModel);
     }
  
   
 };
+
+DetailAssistant.prototype.deleteFromFavorites = function(event){
+
+    DBAss.removeFav(this.readFromFavorites, this.day, this.room, this.detailid);
+
+}
