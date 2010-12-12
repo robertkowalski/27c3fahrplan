@@ -53,14 +53,16 @@ FirstAssistant.prototype.setup = function(){
     }, this.menuModel = {
         items: Congress.menu
     });
-    
+    this.buttonAttributes = {
+        
+    };
     this.buttonModel = {
          "label" : "Show Favorites",
          "buttonClass" : "",
          "disabled" : false
      };
     //set up the button
-    this.controller.setupWidget('FavoritesButton', this.buttonModel); 
+    this.controller.setupWidget('FavoritesButton', this.buttonAttributes, this.buttonModel); 
     this.favButton = this.controller.get('FavoritesButton');
     this.openFavs = this.openFavorites.bindAsEventListener(this); 
     
