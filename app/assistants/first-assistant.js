@@ -55,7 +55,7 @@ FirstAssistant.prototype.setup = function(){
     });
     
     this.bookmarksId = this.controller.get('bookmarks');
-	this.showBookmarks = this.openFavorites.bindAsEventListener(this); /*PRE-CACHE*/
+	this.showBookmarks = this.openFavorites.bindAsEventListener(this); //PRE-CACHE//
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
     this.menuWidget = this.controller.get('MenuWidget');
