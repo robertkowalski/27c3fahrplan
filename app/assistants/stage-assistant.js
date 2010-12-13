@@ -16,7 +16,7 @@ StageAssistant.prototype.handleCommand = function(event) {
                 currentScene.showAlertDialog({
                     onChoose: function(value) {},
                     title:  Mojo.Controller.appInfo.title + ' - v' + Mojo.Controller.appInfo.version,
-                    message: '&copy; 2010, Robert Kowalski'+'<div><br>This App has no <br></br>super-pyramide-powers.</br></div>',
+                    message: '&copy; 2010, R. Kowalski & O. Machulla'+'<div><br>This App has no <br></br>super-pyramide-powers.</br></div>',
                     choices:[
                     {label: "OK", value:""}
                     ],

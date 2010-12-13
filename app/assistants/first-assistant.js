@@ -53,34 +53,24 @@ FirstAssistant.prototype.setup = function(){
     }, this.menuModel = {
         items: Congress.menu
     });
-    this.buttonAttributes = {
-        
-    };
-    this.buttonModel = {
-         "label" : "Show Favorites",
-         "buttonClass" : "",
-         "disabled" : false
-     };
-    //set up the button
-    this.controller.setupWidget('FavoritesButton', this.buttonAttributes, this.buttonModel); 
-    this.favButton = this.controller.get('FavoritesButton');
-    this.openFavs = this.openFavorites.bindAsEventListener(this); 
+    
+    this.bookmarksId = this.controller.get('bookmarks');
+	this.showBookmarks = this.openFavorites.bindAsEventListener(this); /*PRE-CACHE*/
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
-    
     this.menuWidget = this.controller.get('MenuWidget');
 };
 
 FirstAssistant.prototype.activate = function(event) {
-    this.controller.listen(this.menuWidget, Mojo.Event.listTap,this.openMenuItem);
-    this.controller.listen(this.favButton, Mojo.Event.tap, this.openFavs);
+    this.controller.listen(this.menuWidget, Mojo.Event.listTap, this.openMenuItem);
+	this.controller.listen(this.bookmarksId, Mojo.Event.tap, this.showBookmarks);
 
 };
 
 
 FirstAssistant.prototype.deactivate = function(event) {
-    this.controller.stopListening(this.menuWidget, Mojo.Event.listTap,this.openMenuItem);
-    this.controller.stopListening(this.favButton, Mojo.Event.tap,this.openFavs);
+    this.controller.stopListening(this.menuWidget, Mojo.Event.listTap, this.openMenuItem);
+    this.controller.stopListening(this.bookmarksId, Mojo.Event.tap, this.showBookmarks);
 
 };
 

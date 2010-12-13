@@ -40,7 +40,7 @@ FavoritesAssistant.prototype.processResults = function(inResults){
             }
         } else {
             this.favmodel[0] =[];
-            this.favmodel[0]['title'] = 'No Favorites saved';
+            this.favmodel[0]['title'] = 'No Bookmarks saved';
         }
         this.menuModel = {
             items: this.favmodel

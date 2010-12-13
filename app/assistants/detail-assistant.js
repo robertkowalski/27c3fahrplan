@@ -44,7 +44,7 @@ DetailAssistant.prototype.setup = function() {
         
     };    
     this.buttonModel = {
-         "label" : "Add to Favorites",
+         "label" : "Add Bookmark",
          "buttonClass" : "",
          "disabled" : false
      };
@@ -93,7 +93,7 @@ DetailAssistant.prototype.addToFavorites = function(event){
     DBAss.writeFav(this.day, this.room, this.detailid, this.content[0].id);
     
     //...change button model  
-    this.buttonModel.label ="Remove from Favorites";
+    this.buttonModel.label ="Remove Bookmark";
     this.controller.modelChanged(this.buttonModel);
 };
 
@@ -106,7 +106,7 @@ DetailAssistant.prototype.readFromFavorites = function(inResult){
         //...change button model
         
 
-        this.buttonModel.label ="Remove from Favorites";
+        this.buttonModel.label ="Remove Bookmark";
         this.controller.modelChanged(this.buttonModel);
         
         this.listener = 'remove';    
@@ -119,7 +119,7 @@ DetailAssistant.prototype.readFromFavorites = function(inResult){
         Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
         //...change button model
         
-        this.buttonModel.label ="Add to Favorites";
+        this.buttonModel.label ="Add Bookmark";
         this.controller.modelChanged(this.buttonModel);
        
         this.listener = 'add';

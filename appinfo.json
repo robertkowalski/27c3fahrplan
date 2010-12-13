@@ -8,5 +8,7 @@
     "noDeprecatedStyles": true,
     "theme": "light",
  
-    "icon": "icon.png"
+    "icon": "icon_64.png",
+    "smallicon": "icon_32.png",
+    "splashicon": "icon_256.png"
 }

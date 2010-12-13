@@ -21,6 +21,13 @@
     margin-top:10px;
 }
 */
+
+.truncateCSS3 {
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow:ellipsis
+}
+
 .italic {
     font-style:italic;
 }
