@@ -1,32 +1,51 @@
+/*
+Copyright (c) 2010, R. Kowalski
+All rights reserved.
+
+
+Redistribution and use in source and binary forms, 
+with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, 
+  this list of conditions and the following disclaimer.
+  
+* Redistributions in binary form must reproduce the above copyright notice, 
+  this list of conditions and the following disclaimer in the documentation and/or other materials provided 
+  with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
 function DetailAssistant(response) {
     
     this.day = response.day;
     this.room = response.room;
-    this.detailid = response.detailid;
+    this.indexId = response.detailid;
         
     this.text = Fahrplan.data;
     this.content = [];
-    this.content[0] = this.text[this.day][this.room][this.detailid];
+    this.content[0] = this.text[this.day][this.room][this.indexId];
+    
+    this.detailid = this.text[this.day][this.room][response.detailid].id;
+    
 
 }
 
 
 DetailAssistant.prototype.setup = function() {
 
-    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
-        omitDefaultItems: true
-    }, this.model = {
-        visible: true,
-        items: [Mojo.Menu.editItem, {
-            label: "Help",
-            command: "do-helpAddSub"
-        }, {
-            label: "About",
-            command: 'do-About'
-        }]
-    });
-
-    Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.detailid);
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
+    
+    Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.indexId);
 
     this.detailModel = {
             items: this.content
@@ -51,8 +70,9 @@ DetailAssistant.prototype.setup = function() {
     //set up the button
     this.controller.setupWidget('FavoritesButton', this.buttonAttributes, this.buttonModel); 
     this.favButton = this.controller.get('FavoritesButton');
-    this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
     
+    this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
+    this.remFromFavs = this.deleteFromFavorites.bindAsEventListener(this); 
     
     
 };
@@ -87,22 +107,14 @@ DetailAssistant.prototype.deactivate = function(event) {
 DetailAssistant.prototype.cleanup = function(event) {
 };
 
-DetailAssistant.prototype.addToFavorites = function(event){
-    
-    // day -> room -> eventindex -> eventid
-    DBAss.writeFav(this.day, this.room, this.detailid, this.content[0].id);
-    
-    //...change button model  
-    this.buttonModel.label ="Remove Bookmark";
-    this.controller.modelChanged(this.buttonModel);
-};
+
 
 DetailAssistant.prototype.readFromFavorites = function(inResult){
     
     if(inResult.length > 0){
-        Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs); 
-        this.remFromFavs = this.deleteFromFavorites.bindAsEventListener(this); 
-        Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.remFromFavs);
+        this.controller.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs); 
+        
+        this.controller.listen(this.favButton, Mojo.Event.tap, this.remFromFavs);
         //...change button model
         
 
@@ -111,12 +123,12 @@ DetailAssistant.prototype.readFromFavorites = function(inResult){
         
         this.listener = 'remove';    
     
-    } else { // just deleted and want to readd
+    } else {
         if (this.remFromFavs) {
-            Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
+            this.controller.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
   
         }
-        Mojo.Event.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
+        this.controller.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
         //...change button model
         
         this.buttonModel.label ="Add Bookmark";
@@ -129,9 +141,28 @@ DetailAssistant.prototype.readFromFavorites = function(inResult){
   
 };
 
+DetailAssistant.prototype.addToFavorites = function(event){
+    
+    // day -> room -> eventindex -> eventid
+
+    DBAss.writeFav(this.day, this.room, this.detailid);
+    
+    //...change button model  
+    this.buttonModel.label ="Remove Bookmark";
+    this.controller.modelChanged(this.buttonModel);
+    this.controller.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs); 
+    this.controller.listen(this.favButton, Mojo.Event.tap, this.remFromFavs);
+    this.listener = 'remove';  
+    
+};
+
 DetailAssistant.prototype.deleteFromFavorites = function(event){
 
-    DBAss.removeFav(this.readFromFavorites, this.day, this.room, this.detailid);
+    DBAss.removeFav(this.day, this.room, this.detailid);
     this.buttonModel.label ="Add to Favorites";
     this.controller.modelChanged(this.buttonModel);
+    this.controller.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
+    this.controller.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
+    this.listener = 'add';
 }
+

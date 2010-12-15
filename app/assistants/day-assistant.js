@@ -33,20 +33,9 @@ function DayAssistant(response) {
 }
 
 DayAssistant.prototype.setup = function() {
-    
-    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
-        omitDefaultItems: true
-    }, this.model = {
-        visible: true,
-        items: [Mojo.Menu.editItem, {
-            label: "Help",
-            command: "do-helpAddSub"
-        }, {
-            label: "About",
-            command: 'do-About'
-        }]
-    });
-        
+  
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel); 
+          
      this.controller.setupWidget("saal1",
          this.attributes = {
              },
@@ -172,7 +161,6 @@ DayAssistant.prototype.handleTap= function(element, event) {
 DayAssistant.prototype.chooseSaal = function() {
 
     var thisHour = this.date.getHours();   
-//    Mojo.Log.error(thisHour);	
     var countroom;
     
     for (countroom = 2; countroom > -1; countroom--) {
@@ -260,13 +248,14 @@ DayAssistant.prototype.showDetails = function(room){
 DayAssistant.prototype.openDetailWithId = function(event, room){
     // emptyTimes[this.day][room][countEmpty].id = '0000';
     if (this.text[this.day][this.chooseRoom][event.index].color != 'transparent') {
-    
+
         Mojo.Controller.stageController.pushScene({
             name: 'detail'
         }, {
             day: this.day,
-            room: room,
+            room: this.chooseRoom,
             detailid: event.index
+           
         });
     
     }

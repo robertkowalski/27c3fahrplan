@@ -1,6 +1,6 @@
 // Create DB if not exists
 
-var name = "ext:27c3_";
+var name = "ext:27c3_v1.4";
 var version = "0.1";  
 var displayName = "New2 27C3 Favorites DB"; 
 var size = 200000;  
@@ -10,7 +10,7 @@ var db = openDatabase(name, version, displayName, size);
 if (!db) {
   Mojo.Log.error("Could not open database");
 } else {
-    var sql = "CREATE TABLE IF NOT EXISTS 'my_table' (id INTEGER PRIMARY KEY, day INTEGER, room INTEGER, eventindex INTEGER, eventid TEXT)";  
+    var sql = "CREATE TABLE IF NOT EXISTS 'table' (id INTEGER PRIMARY KEY, day INTEGER, room INTEGER, eventid TEXT)";  
     db.transaction( function (transaction) {
         transaction.executeSql(sql,
                            [],
@@ -29,7 +29,7 @@ myTable = Class.create({
         this.db = db;
     },
     readFavs: function(callback) {
-        var sql = "SELECT * FROM 'my_table'";
+        var sql = "SELECT * FROM 'table'";
         this.db.transaction(function(transaction) {
             transaction.executeSql(sql, [],
                 function(transaction, results) {  
@@ -46,10 +46,10 @@ myTable = Class.create({
             );
         });  
     },
-    writeFav: function(day, room, eventindex, eventid) {
-        var sql = "INSERT INTO 'my_table' (day, room, eventindex, eventid) VALUES (?, ?, ?, ?)";
+    writeFav: function(day, room, eventid) {
+        var sql = "INSERT INTO 'table' (day, room, eventid) VALUES (?, ?, ?)";
         this.db.transaction( function (transaction) {
-            transaction.executeSql(sql,  [day, room, eventindex, eventid], 
+            transaction.executeSql(sql,  [day, room, eventid], 
                 function(transaction, results) {    // success handler
                     Mojo.Log.info("Successfully inserted record"); 
                 }.bind(this),
@@ -59,8 +59,8 @@ myTable = Class.create({
           );
         });  
     },
-    checkFavs: function(callback, day, room, eventindex) { 
-        var sql = "SELECT * FROM 'my_table' WHERE day = "+day+" AND room ="+room+" AND eventindex = "+eventindex;
+    checkFavs: function(callback, day, room, eventid) { 
+        var sql = "SELECT * FROM 'table' WHERE day = "+day+" AND room ="+room+" AND eventid = "+eventid;
         this.db.transaction(function(transaction) {
             transaction.executeSql(sql, [],
                 function(transaction, results) {  
@@ -72,21 +72,21 @@ myTable = Class.create({
                     callback(result);
                 }.bind(this),
                 function(transaction, error) {
-                    Mojo.Log.error("Could not read: " + error.message);
+                    Mojo.Log.error("Could not read(checkfavs): " + error.message);
                 }.bind(this)
             );
         }); 
     
     },
-    removeFav: function(callback, day, room, eventindex){
-        var sql = "DELETE FROM 'my_table' WHERE day = "+day+" AND room ="+room+" AND eventindex = "+eventindex;
+    removeFav: function(day, room, eventid){
+        var sql = "DELETE FROM 'table' WHERE day = "+day+" AND room ="+room+" AND eventid = "+eventid;
         this.db.transaction(function(transaction) {
             transaction.executeSql(sql, [],
                 function(transaction, results) {    // success handler
                     Mojo.Log.info("Successfully deleted record"); 
                 }.bind(this),
                 function(transaction, error) {
-                    Mojo.Log.error("Could not read: " + error.message);
+                    Mojo.Log.error("Could not remove: " + error.message);
                 }.bind(this)
             );
         }); 

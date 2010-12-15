@@ -31,26 +31,28 @@ function HelpAssistant() {
 }
 
 HelpAssistant.prototype.setup = function() {
-
-//without Help Entry //
-    this.controller.setupWidget(Mojo.Menu.appMenu,
-        this.attributes = {
-            omitDefaultItems: true
-        },
-        this.model = {
-            visible: true,
-            items: [ 
-                
-                Mojo.Menu.editItem, //has to be first
-                { label: "Preferences", command: 'do-Prefs' },
-                { label: "About", command: 'do-About' }
-            ]
-        }
-    );
+    
+    //don't use StageController appMenuModel
+    
+    this.appMenuModel = {
+        visible: true,
+        items: [Mojo.Menu.editItem, {
+            label: $L("About"),
+            command: 'do-About'
+        }]
+    };
+    
+    
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, this.appMenuModel);
+    
     this.showComposeEmail = this.showComposeEmail.bindAsEventListener(this); //PRE-CACHE//
     this.whereCongress = this.whereCongress.bindAsEventListener(this); //PRE-CACHE//
-    Mojo.Event.listen(this.controller.get('email'), Mojo.Event.tap, this.showComposeEmail);
-    Mojo.Event.listen(this.controller.get('where'), Mojo.Event.tap, this.whereCongress);
+    
+    this.emailId = this.controller.get('email');
+    this.mapsId = this.controller.get('where');
+    
+    this.controller.listen(this.emailId, Mojo.Event.tap, this.showComposeEmail);
+    this.controller.listen(this.mapsId, Mojo.Event.tap, this.whereCongress);
 };
 
 HelpAssistant.prototype.activate = function(event) {
@@ -60,8 +62,8 @@ HelpAssistant.prototype.activate = function(event) {
 
 HelpAssistant.prototype.deactivate = function(event) {
 
-    Mojo.Event.stopListening(this.controller.get('email'), Mojo.Event.listTap, this.showComposeEmail.bind(this));    
-    Mojo.Event.stopListening(this.controller.get('where'), Mojo.Event.listTap, this.whereCongress.bind(this));    
+    this.controller.stopListening(this.emailId, Mojo.Event.listTap, this.showComposeEmail.bind(this));    
+    this.controller.stopListening(this.mapsId, Mojo.Event.listTap, this.whereCongress.bind(this));    
 };
 
 HelpAssistant.prototype.cleanup = function(event) {
@@ -78,7 +80,7 @@ HelpAssistant.prototype.showComposeEmail = function(bind){
                     text: "Hi Robert, \n",
                     recipients: [{
                         value : "palm.webos.apps@googlemail.com",
-                        contactDisplay : 'Congress-App Supportticket'
+                        contactDisplay : 'Congress-App Support'
                     }]															
                 }				
             }

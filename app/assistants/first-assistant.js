@@ -31,19 +31,17 @@ function FirstAssistant() {
 
 FirstAssistant.prototype.setup = function(){
 
-    this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
-        omitDefaultItems: true
-    }, this.model = {
-        visible: true,
-        items: [Mojo.Menu.editItem, {
-            label: "Help",
-            command: "do-helpAddSub"
-        }, {
-            label: "About",
-            command: 'do-About'
-        }]
-    });
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
     
+    //Scrim triggered at Startup //
+    this.spinnerModel = { spinning: true };
+    this.spinnerAttributes = { spinnerSize: 'large',
+                               fps: 30
+                                };
+    this.controller.setupWidget("progressSpinner", 
+                               this.spinnerAttributes,
+                               this.spinnerModel);
+                                    
     this.controller.setupWidget("MenuWidget", {
         itemTemplate: "first/first-row-template",
         listTemplate: "first/first-list-template",
@@ -90,4 +88,7 @@ FirstAssistant.prototype.openFavorites = function(event) {
         name: "favorites"
     });
 };
-
+Helper = {};
+Helper.hide = function(){
+    $('Scrim').hide();
+}    

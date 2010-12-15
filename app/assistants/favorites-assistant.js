@@ -4,6 +4,9 @@ function FavoritesAssistant() {
 
 FavoritesAssistant.prototype.setup = function() {
 
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel); 
+
+    
     this.testmodel = []; 
     this.testmodel[0] = [];
     this.testmodel[0]['title'] = 'No Favorites saved';
@@ -29,44 +32,74 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 FavoritesAssistant.prototype.processResults = function(inResults){
 
-        this.favmodel = [];
-        if (inResults.length > 0) {
-            for (i = 0; i < inResults.length; i++) {
-                this.favmodel[i] =[];
-                this.favmodel[i]['title'] = this.text[inResults[i].day][inResults[i].room][inResults[i].eventindex]['title'];
-                this.favmodel[i]['day'] = inResults[i].day;
-                this.favmodel[i]['room'] = inResults[i].room;
-                this.favmodel[i]['eventindex'] = inResults[i].eventindex;
-            }
-        } else {
-            this.favmodel[0] =[];
-            this.favmodel[0]['title'] = 'No Bookmarks saved';
-        }
-        this.menuModel = {
-            items: this.favmodel
-        };
-	  //  Mojo.Log.error('eventindex'+inResults[i].eventindex);
-         
-        this.controller.setWidgetModel(this.favwidget, this.menuModel);
-        this.controller.modelChanged(this.menuModel);
-        
-        this.openDetailWithIdBind = this.handleTap.bindAsEventListener(this); //PRE-CACHE//
-        this.controller.listen(this.favwidget, Mojo.Event.listTap,this.openDetailWithIdBind);
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
 
+    this.favmodel = [];
+
+    if (inResults.length > 0) {
+        
+        for (var i = 0; i < inResults.length; i++) {
+     
+           this.favmodel[i] =[];
+           this.favmodel[i]['day'] = inResults[i].day;
+           this.favmodel[i]['room'] = inResults[i].room;
+           this.favmodel[i]['eventid'] = inResults[i].eventid;
+
+           for (var day = 0; day < 4; day++) {
+               for (var room = 0; room < 3; room++) {
+                   for (var j = 0; j < this.text[day][room].length; j++) {
+                       if(this.text[day][room][j].id == inResults[i].eventid){
+                           this.favmodel[i]['title'] = this.text[day][room][j].title;
+                           this.favmodel[i]['feedback'] = 'immediate';
+                           break;
+                       }
+                   }   
+               }
+           }  
+        }
+    } else {
+        this.favmodel[0] =[];
+        this.favmodel[0]['title'] = 'No Bookmarks saved';
+        this.favmodel[0]['feedback'] = 'none';
+        
+    }
+    this.menuModel = {
+        items: this.favmodel
+    };
+  //  Mojo.Log.error('eventindex'+inResults[i].eventindex);
+     
+    this.controller.setWidgetModel(this.favwidget, this.menuModel);
+    this.controller.modelChanged(this.menuModel);
+    
+    if (this.favmodel[0]['title'] != 'No Bookmarks saved') {
+        this.openDetailWithIdBind = this.handleTap.bindAsEventListener(this); //PRE-CACHE//
+        this.controller.listen(this.favwidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+    }
 }
 
 FavoritesAssistant.prototype.handleTap = function(event){
-    
-    var day = this.favmodel[event.index]['day'];
-    var room = this.favmodel[event.index]['room'];
-    var index = this.favmodel[event.index]['eventindex'];
-    Mojo.Log.error(event.index);
-    Mojo.Controller.stageController.pushScene({
+//!!!!!!!!!!!    
+   var day, room = 0;
+   var eventid = this.favmodel[event.index]['eventid'];
+   for (day = 0; day < 4; day++) {
+       for (room = 0; room < 3; room++) {
+           for (i = 0; i < this.text[day][room].length; i++) {
+               if(this.text[day][room][i].id == eventid){
+                   this.day = day;
+                   this.room = room;
+                   this.eventindex = i;
+                   break;
+               }
+           }   
+       }
+   }
+   
+   Mojo.Controller.stageController.pushScene({
             name: 'detail'
         }, {
-            day: day,
-            room: room,
-            detailid: index
+            day: this.day,
+            room: this.room,
+            detailid: this.eventindex
         });
 
 }    

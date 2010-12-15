@@ -1,31 +1,7 @@
-/*
-.day-scene-fade-bottom {
-    
-}
-
-.day-footer-spacer {
-    padding-bottom:10px;
-}
-
-.day-footer{
-    position:fixed;
-    bottom:0px;
-    left:0px;
-    right:0px;
-    -webkit-border-image: url(../images/fade-bottom.png) 35 0 0 0 repeat repeat;
-    border-width: 35px 0px 0px 0px;
-    -webkit-palm-mouse-target: ignore;
-}
-
-.day-footer-wrapper {
-    margin-top:10px;
-}
-*/
-
 .truncateCSS3 {
     overflow:hidden;
     white-space: nowrap;
-    text-overflow:ellipsis
+    text-overflow:ellipsis;
 }
 
 .italic {
@@ -51,8 +27,7 @@
     right:10px;
 }
 .copyright_help {
-    position:relative;
+    position:absolute;
     left: 10px;
-    bottom:2px;
-    padding-top:5px;
+    top:420px;
 }

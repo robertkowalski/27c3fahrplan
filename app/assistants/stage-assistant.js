@@ -4,7 +4,24 @@ function StageAssistant() {
 StageAssistant.prototype.setup = function() {
     
     this.controller.pushScene("first");
+    
+    appMenuAttributes = {
+        omitDefaultItems: true
+    };
+    appMenuModel = {
+        visible: true,
+        items: [Mojo.Menu.editItem, {
+            label: $L("Help"),
+            command: "do-helpAddSub"
+        }, {
+            label: $L("About"),
+            command: 'do-About'
+        }]
+    };
+
+    
 };
+
 
 
 StageAssistant.prototype.handleCommand = function(event) {
