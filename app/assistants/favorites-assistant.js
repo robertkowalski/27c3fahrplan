@@ -4,7 +4,21 @@ function FavoritesAssistant() {
 
 FavoritesAssistant.prototype.setup = function() {
 
-    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel); 
+    this.appMenuModel = {
+        visible: true,
+        items: [Mojo.Menu.editItem, 
+        {
+            label: $L("Help"),
+            command: "do-helpAddSub"
+        }, 
+        {
+            label: $L("About"),
+            command: 'do-About'
+        }       
+        
+        ]
+    };
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, this.appMenuModel); 
 
     
     this.testmodel = []; 
@@ -41,8 +55,6 @@ FavoritesAssistant.prototype.processResults = function(inResults){
         for (var i = 0; i < inResults.length; i++) {
      
            this.favmodel[i] =[];
-           this.favmodel[i]['day'] = inResults[i].day;
-           this.favmodel[i]['room'] = inResults[i].room;
            this.favmodel[i]['eventid'] = inResults[i].eventid;
 
            for (var day = 0; day < 4; day++) {
@@ -51,6 +63,8 @@ FavoritesAssistant.prototype.processResults = function(inResults){
                        if(this.text[day][room][j].id == inResults[i].eventid){
                            this.favmodel[i]['title'] = this.text[day][room][j].title;
                            this.favmodel[i]['feedback'] = 'immediate';
+						   this.favmodel[i]['day'] = day;
+						   this.favmodel[i]['room'] = room;
                            break;
                        }
                    }   
@@ -105,8 +119,9 @@ FavoritesAssistant.prototype.handleTap = function(event){
 }    
 
 FavoritesAssistant.prototype.deactivate = function(event) {
-    Mojo.Event.stopListening(this.favwidget, Mojo.Event.listTap, this.openDetailWithIdBind);
-
+	if (this.favmodel[0]['title'] != 'No Bookmarks saved') {
+		Mojo.Event.stopListening(this.favwidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+	}
 };
 
 FavoritesAssistant.prototype.cleanup = function(event) {

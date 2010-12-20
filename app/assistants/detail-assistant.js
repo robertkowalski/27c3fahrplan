@@ -50,13 +50,15 @@ DetailAssistant.prototype.setup = function() {
     this.detailModel = {
             items: this.content
     };
+
     
     this.controller.setupWidget("EventWidget", {
             itemTemplate: "detail/detail-row-template",
             listTemplate: "detail/detail-list-template",
             swipeToDelete: false, 
             renderLimit: 50,
-            reorderable: false
+            reorderable: false,
+			focus: true
         },this.detailModel);
         
     this.buttonAttributes = {
@@ -67,6 +69,24 @@ DetailAssistant.prototype.setup = function() {
          "buttonClass" : "",
          "disabled" : false
      };
+	 
+    this.notesModel = {
+         value: "",
+         disabled: false
+    }
+	this.controller.setupWidget("textFieldId",
+        this.attributes = {
+            hintText: $L("Add your Notes here..."),
+            multiline: true,
+            enterSubmits: false,
+			focus: false,
+			autoFocus: false
+			
+         },this.notesModel
+    ); 
+    this.textFielId = this.controller.get('textFieldId');
+	this.controller.listen(this.textFielId,Mojo.Event.propertyChange, this.writeNotes.bind(this));
+	 
     //set up the button
     this.controller.setupWidget('FavoritesButton', this.buttonAttributes, this.buttonModel); 
     this.favButton = this.controller.get('FavoritesButton');
@@ -74,6 +94,9 @@ DetailAssistant.prototype.setup = function() {
     this.addToFavs = this.addToFavorites.bindAsEventListener(this); 
     this.remFromFavs = this.deleteFromFavorites.bindAsEventListener(this); 
     
+	this.eventWidgetId = this.controller.get('EventWidget');
+	
+	this.controller.setInitialFocusedElement(null);
     
 };
 
@@ -90,7 +113,9 @@ DetailAssistant.prototype.activate = function(event) {
     var today = dateArr[this.day]; 
     this.dayId.update(today); 
     
-    DBAss.checkFavs(this.readFromFavorites.bind(this),this.day,this.room,this.detailid); 
+    DBAss.checkFavs(this.readFromFavorites.bind(this),this.detailid);
+    this.getNotes(); 
+	
 };
 
 
@@ -99,9 +124,9 @@ DetailAssistant.prototype.deactivate = function(event) {
         Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);
     } else {
         Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
-
     }
-    //Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.addToFavs);	   
+	this.controller.stopListening(this.textFielId, Mojo.Event.tap, this.writeNotes.bind(this));
+
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
@@ -145,7 +170,7 @@ DetailAssistant.prototype.addToFavorites = function(event){
     
     // day -> room -> eventindex -> eventid
 
-    DBAss.writeFav(this.day, this.room, this.detailid);
+    DBAss.writeFav(this.detailid);
     
     //...change button model  
     this.buttonModel.label ="Remove Bookmark";
@@ -158,7 +183,7 @@ DetailAssistant.prototype.addToFavorites = function(event){
 
 DetailAssistant.prototype.deleteFromFavorites = function(event){
 
-    DBAss.removeFav(this.day, this.room, this.detailid);
+    DBAss.removeFav(this.detailid);
     this.buttonModel.label ="Add to Favorites";
     this.controller.modelChanged(this.buttonModel);
     this.controller.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
@@ -166,3 +191,42 @@ DetailAssistant.prototype.deleteFromFavorites = function(event){
     this.listener = 'add';
 }
 
+DetailAssistant.prototype.getNotes = function(){
+
+    DBAss.getNotes(this.processNotes.bind(this),this.detailid);
+}
+
+DetailAssistant.prototype.processNotes = function(inResult){
+
+    if (inResult.length > 0) {
+	   if (inResult[0].notes) {
+	   	this.notesModel.value = inResult[0].notes;
+	   	this.controller.modelChanged(this.notesModel);
+	   }
+	}	
+}
+
+DetailAssistant.prototype.writeNotes = function(){
+
+    DBAss.getNotes(this.updateOrInsert.bind(this), this.detailid);  
+}
+
+
+DetailAssistant.prototype.updateOrInsert = function(inResult){
+
+    this.notes = this.textFielId.mojo.getValue()
+
+    if (inResult.length > 0) {
+        DBAss.updateNotes(this.detailid, this.notes);
+
+    } else {
+		//insert
+		if (!this.notes) {
+		  this.notes = ' ';
+		}
+		
+		DBAss.addNotes(this.detailid, this.notes);
+		
+	}
+   
+}

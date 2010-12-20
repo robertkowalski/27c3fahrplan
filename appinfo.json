@@ -1,6 +1,6 @@
 {
     "id": "rok.fahrplancongress27c3.webos.store",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "vendor": "Robert Kowalski",
     "type": "web",
     "main": "index.html",

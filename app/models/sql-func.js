@@ -10,8 +10,10 @@ var db = openDatabase(name, version, displayName, size);
 if (!db) {
   Mojo.Log.error("Could not open database");
 } else {
-    var sql = "CREATE TABLE IF NOT EXISTS 'table' (id INTEGER PRIMARY KEY, day INTEGER, room INTEGER, eventid TEXT)";  
-    db.transaction( function (transaction) {
+    var sql = "CREATE TABLE IF NOT EXISTS 'table' (id INTEGER PRIMARY KEY, eventid TEXT)";  
+    var sqlNotes = "CREATE TABLE IF NOT EXISTS 'notes1' (id INTEGER PRIMARY KEY, eventid TEXT, notes TEXT)";  
+
+	db.transaction( function (transaction) {
         transaction.executeSql(sql,
                            [],
                            function(transaction, results) {    // success handler
@@ -21,7 +23,18 @@ if (!db) {
                              Mojo.Log.error("Could not create table: " + error.message);
                            }
         );
-  }.bind(this));
+  }.bind(this));  
+  db.transaction( function (transaction) {
+        transaction.executeSql(sqlNotes,
+                           [],
+                           function(transaction, results) {    // success handler
+                             Mojo.Log.info("Successfully created table Notes"); 
+                           },
+                           function(transaction, error) {      // error handler
+                             Mojo.Log.error("Could not create table: " + error.message);
+                           }
+        );
+  }.bind(this));  
 }
  
 myTable = Class.create({
@@ -46,10 +59,10 @@ myTable = Class.create({
             );
         });  
     },
-    writeFav: function(day, room, eventid) {
-        var sql = "INSERT INTO 'table' (day, room, eventid) VALUES (?, ?, ?)";
+    writeFav: function(eventid) {
+        var sql = "INSERT INTO 'table' (eventid) VALUES (?)";
         this.db.transaction( function (transaction) {
-            transaction.executeSql(sql,  [day, room, eventid], 
+            transaction.executeSql(sql,  [eventid], 
                 function(transaction, results) {    // success handler
                     Mojo.Log.info("Successfully inserted record"); 
                 }.bind(this),
@@ -59,8 +72,8 @@ myTable = Class.create({
           );
         });  
     },
-    checkFavs: function(callback, day, room, eventid) { 
-        var sql = "SELECT * FROM 'table' WHERE day = "+day+" AND room ="+room+" AND eventid = "+eventid;
+    checkFavs: function(callback, eventid) { 
+        var sql = "SELECT * FROM 'table' WHERE eventid = "+eventid;
         this.db.transaction(function(transaction) {
             transaction.executeSql(sql, [],
                 function(transaction, results) {  
@@ -75,11 +88,10 @@ myTable = Class.create({
                     Mojo.Log.error("Could not read(checkfavs): " + error.message);
                 }.bind(this)
             );
-        }); 
-    
+        });  
     },
-    removeFav: function(day, room, eventid){
-        var sql = "DELETE FROM 'table' WHERE day = "+day+" AND room ="+room+" AND eventid = "+eventid;
+    removeFav: function(eventid){
+        var sql = "DELETE FROM 'table' WHERE eventid = "+eventid;
         this.db.transaction(function(transaction) {
             transaction.executeSql(sql, [],
                 function(transaction, results) {    // success handler
@@ -90,8 +102,54 @@ myTable = Class.create({
                 }.bind(this)
             );
         }); 
+    },
+	addNotes: function(eventid, notes) {
+        var sql = "INSERT INTO 'notes1' (eventid, notes) VALUES (?, ?)";
+        this.db.transaction( function (transaction) {
+            transaction.executeSql(sql,  [eventid, notes], 
+                function(transaction, results) {    // success handler
+                    Mojo.Log.info("Successfully inserted note-record"); 
+                }.bind(this),
+                function(transaction, error) {      // error handler
+                    Mojo.Log.error("Could not insert note-record: " + error.message);
+                }.bind(this)
+          );
+        });  
+    },
+    getNotes: function(callback, eventid) { 
+        var sql = "SELECT * FROM 'notes1' WHERE eventid = "+eventid;
+        this.db.transaction(function(transaction) {
+            transaction.executeSql(sql, [],
+                function(transaction, results) {  
+                    var row;
+                    var result = [];
+                    for (var i = 0; i < results.rows.length; i++) {
+                        result[i] = results.rows.item(i);
+                    }                         
+                    callback(result);
+                }.bind(this),
+                function(transaction, error) {
+                    Mojo.Log.error("Could not read(checkfavs): " + error.message);
+                }.bind(this)
+            );
+        });  
+    },	
+    updateNotes: function(eventid, notes) {
+        var sql = "UPDATE 'notes1' SET 'notes' = (?) WHERE eventid = " + eventid;
+        this.db.transaction( function (transaction) {
+            transaction.executeSql(sql,  [notes], 
+                function(transaction, results) {    // success handler
+                    Mojo.Log.info("Successfully inserted note-record"); 
+                }.bind(this),
+                function(transaction, error) {      // error handler
+                    Mojo.Log.error("Could not insert note-record: " + error.message);
+                }.bind(this)
+          );
+        });  
     }    
 });
 
   
 var DBAss = new myTable(db);
+
+

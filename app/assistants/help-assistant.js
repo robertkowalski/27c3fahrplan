@@ -36,7 +36,12 @@ HelpAssistant.prototype.setup = function() {
     
     this.appMenuModel = {
         visible: true,
-        items: [Mojo.Menu.editItem, {
+        items: [Mojo.Menu.editItem, 
+        {
+            label: $L("Bookmarks"),
+            command: 'do-Favs'
+        },
+		{
             label: $L("About"),
             command: 'do-About'
         }]

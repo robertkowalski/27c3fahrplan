@@ -35,7 +35,7 @@ function DayAssistant(response) {
 DayAssistant.prototype.setup = function() {
   
     this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel); 
-          
+         
      this.controller.setupWidget("saal1",
          this.attributes = {
              },
@@ -72,22 +72,45 @@ DayAssistant.prototype.setup = function() {
     this.title = this.controller.get('title');
     this.setTitle(this.chooseRoom);
     
-    this.menuModel = {
+//!---------------------- 
+/*
+    this.controller.setupWidget("scrollerId", {
+                            mode: 'horizontal-snap'
+                            }, this.model = {
+                            snapElements: { x: $$('.scrollerItem') },
+                            snapIndex: 0
+                            });
+    var widget;
+	for(var i=0;i<3;i++){
+		this.menuModel = {
+            items: this.text[this.day][i]
+        };
+		widget = 'TimeWidget'+i;
+	    this.controller.setupWidget(widget, {
+	            itemTemplate: "day/day-row-template",
+	            listTemplate: "day/day-list-template",
+	            swipeToDelete: false, 
+	            renderLimit: 50,
+	            reorderable: false
+	        },this.menuModel);
+	}	
+*/
+this.menuModel = {
             items: this.text[this.day][this.chooseRoom]
-    };
-
-    this.controller.setupWidget("TimeWidget", {
-            itemTemplate: "day/day-row-template",
-            listTemplate: "day/day-list-template",
-            swipeToDelete: false, 
-            renderLimit: 50,
-            reorderable: false
-        },this.menuModel);
-    
+        };   
+this.controller.setupWidget('TimeWidget', {
+                itemTemplate: "day/day-row-template",
+                listTemplate: "day/day-list-template",
+                swipeToDelete: false, 
+                renderLimit: 50,
+                reorderable: false
+            },this.menuModel);
+ 
 
     this.saal1 = this.controller.get('saal1');
     this.saal2 = this.controller.get('saal2');
     this.saal3 = this.controller.get('saal3');
+    
 };
 
 
@@ -113,13 +136,16 @@ DayAssistant.prototype.activate = function(event) {
     this.controller.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
     this.controller.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
     this.controller.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
-    
+//!----------------------   
+//   this.timewidget = this.controller.get("TimeWidget0");
+   
     this.timewidget = this.controller.get("TimeWidget");
     this.showDetails(this.chooseRoom);  
 };
 
 
 DayAssistant.prototype.deactivate = function(event) {	
+
     Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
     Mojo.Event.stopListening(this.saal2, Mojo.Event.tap, this.openSaal2);
     Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	

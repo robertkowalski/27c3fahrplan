@@ -10,13 +10,22 @@ StageAssistant.prototype.setup = function() {
     };
     appMenuModel = {
         visible: true,
-        items: [Mojo.Menu.editItem, {
+        items: [Mojo.Menu.editItem, 
+        {
+            label: $L("Bookmarks"),
+            command: 'do-Favs'
+        },
+        {
             label: $L("Help"),
             command: "do-helpAddSub"
-        }, {
+        }, 
+        {
             label: $L("About"),
             command: 'do-About'
-        }]
+        }  
+		
+		
+		]
     };
 
     
@@ -42,6 +51,9 @@ StageAssistant.prototype.handleCommand = function(event) {
             break;
             case 'do-helpAddSub':
                 this.controller.pushScene("help");
+            break; 
+            case 'do-Favs':
+                this.controller.pushScene("favorites");
             break; 
         }
     }

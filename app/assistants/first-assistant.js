@@ -31,7 +31,23 @@ function FirstAssistant() {
 
 FirstAssistant.prototype.setup = function(){
 
-    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
+	
+	this.appMenuModel = {
+	        visible: true,
+	        items: [Mojo.Menu.editItem, 
+	        {
+	            label: $L("Help"),
+	            command: "do-helpAddSub"
+	        }, 
+	        {
+	            label: $L("About"),
+	            command: 'do-About'
+	        }       
+	        
+	        ]
+	    };
+
+    this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, this.appMenuModel);
     
     //Scrim triggered at Startup //
     this.spinnerModel = { spinning: true };
