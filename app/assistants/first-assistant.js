@@ -73,6 +73,8 @@ FirstAssistant.prototype.setup = function(){
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
     this.menuWidget = this.controller.get('MenuWidget');
+	
+	
 };
 
 FirstAssistant.prototype.activate = function(event) {
