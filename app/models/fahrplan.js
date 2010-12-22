@@ -27,7 +27,7 @@ Fahrplan.process = function (response) {
                     emptyTimes[this.day][room][countEmpty].track = '';
                     emptyTimes[this.day][room][countEmpty].subtitle = '&nbsp;';
                     emptyTimes[this.day][room][countEmpty].title = '&nbsp;';
-                    emptyTimes[this.day][room][countEmpty].duration = emptyTimes[this.day][room][countEmpty].ending - emptyTimes[this.day][room][countEmpty].start;
+                    emptyTimes[this.day][room][countEmpty].duration = Number(emptyTimes[this.day][room][countEmpty].ending) - Number(emptyTimes[this.day][room][countEmpty].start);
                     emptyTimes[this.day][room][countEmpty].slots = emptyTimes[this.day][room][countEmpty].duration / 15;
                     emptyTimes[this.day][room][countEmpty].humanstartend = '';
                     emptyTimes[this.day][room][countEmpty].hourid = 'n';
@@ -47,16 +47,14 @@ Fahrplan.process = function (response) {
             });
             // make bubbles bigger
             for(var i=0; i<this.text[this.day][room].length; i++){
-                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
-                if(this.text[this.day][room][i].duration > 150) {
-                    this.text[this.day][room][i].duration = 150;
-                }
-                
+                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*6;
+               
             }
+            
         } //End Line 82
     }	
     Fahrplan.data = this.text;
-    Helper.hide();
+    Helper.hide(); //hide Scrim
 };
 
 

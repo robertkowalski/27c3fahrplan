@@ -26,7 +26,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 
 function DetailAssistant(response) {
-    
+    Mojo.Log.error('detail-room'+response.detailid);
     this.day = response.day;
     this.room = response.room;
     this.indexId = response.detailid;
@@ -36,7 +36,7 @@ function DetailAssistant(response) {
     this.content[0] = this.text[this.day][this.room][this.indexId];
     
     this.detailid = this.text[this.day][this.room][response.detailid].id;
-    
+    OrientationHelper.back = true;
 
 }
 
@@ -45,7 +45,7 @@ DetailAssistant.prototype.setup = function() {
 
     this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
     
-    Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.indexId);
+ //   Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.indexId);
 
     this.detailModel = {
             items: this.content

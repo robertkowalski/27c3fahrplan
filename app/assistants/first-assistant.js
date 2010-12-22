@@ -73,9 +73,12 @@ FirstAssistant.prototype.setup = function(){
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
     this.menuWidget = this.controller.get('MenuWidget');
-	
-	
+    if (this.controller.stageController.setWindowOrientation) {
+        this.controller.stageController.setWindowOrientation("free");
+    }
 };
+
+
 
 FirstAssistant.prototype.activate = function(event) {
     this.controller.listen(this.menuWidget, Mojo.Event.listTap, this.openMenuItem);
