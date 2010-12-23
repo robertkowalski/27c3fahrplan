@@ -76,6 +76,12 @@ FirstAssistant.prototype.setup = function(){
     if (this.controller.stageController.setWindowOrientation) {
         this.controller.stageController.setWindowOrientation("free");
     }
+	
+	this.controller.serviceRequest('palm://com.palm.connectionmanager', {
+	    method: 'getstatus', 
+	    parameters:  {subscribe: true}, 
+		onSuccess: this.handleResponse.bind(this)
+    });
 };
 
 
@@ -97,10 +103,25 @@ FirstAssistant.prototype.cleanup = function(event) {
    
    
 };
+FirstAssistant.prototype.handleResponse = function (response) {
+
+	if(response.wifi.state == 'disconnected' && response.wan.state == 'disconnected'){
+        Mojo.Controller.errorDialog("You need a WAN or WLAN connection");
+
+	}
+	
+}
 
 FirstAssistant.prototype.openMenuItem = function(event) {
-    
-    Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day, room: 0});
+    var orient = this.controller.stageController.getWindowOrientation();
+	
+    Mojo.Controller.stageController.pushScene(
+	   {name:this.menuModel.items[event.index].scene},
+	   {
+	   	   day: this.menuModel.items[event.index].day, 
+	       room: 0,
+		   orientation: orient
+	   });
 };
 
 FirstAssistant.prototype.openFavorites = function(event) {

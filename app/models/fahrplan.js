@@ -47,7 +47,7 @@ Fahrplan.process = function (response) {
             });
             // make bubbles bigger
             for(var i=0; i<this.text[this.day][room].length; i++){
-                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*6;
+                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*6.2;
                
             }
             
@@ -60,6 +60,7 @@ Fahrplan.process = function (response) {
 
 
 var request = new Ajax.Request(Url.url, {
+	sanitizeJSON: true,
 	method: 'post',
 	evalJSON: 'true',	
 	requestHeaders: {Accept: 'application/json'},

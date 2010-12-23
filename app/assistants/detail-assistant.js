@@ -36,8 +36,7 @@ function DetailAssistant(response) {
     this.content[0] = this.text[this.day][this.room][this.indexId];
     
     this.detailid = this.text[this.day][this.room][response.detailid].id;
-    OrientationHelper.back = true;
-
+  
 }
 
 

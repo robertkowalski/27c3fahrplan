@@ -26,21 +26,18 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 
 
-/*
- * 
- * @todo: tap events (listeners), set css styles @ orient. change 
- * 
- * 
- */
-
-
 function DayAssistant(response) {
-
+    	 
+    this.orientation = response.orientation;
     this.day = response.day;
     this.date = new Date();  
     this.chooseRoom = response.room;
 	
-	this.text = Fahrplan.data;   
+	this.text = Fahrplan.data;
+	
+	$('title1').hide();
+    $('title2').hide();
+    $('title3').hide();   
 }
 
 DayAssistant.prototype.setup = function() {
@@ -68,22 +65,32 @@ DayAssistant.prototype.setup = function() {
 	        },this.menuModel);
 	}	
 
-/*
-	if (this.controller.stageController.setWindowOrientation) {
-        this.controller.stageController.setWindowOrientation("free");
-    }*/
-    this.controller.listen(this.controller.document, 'orientationchange', this.handleOrientation.bindAsEventListener(this));  
-	OrientationHelper = {};
-    OrientationHelper.last = null;
+    this.orientationBinder = this.handleOrientation.bindAsEventListener(this);
+    this.controller.listen(this.controller.document, 'orientationchange', this.orientationBinder);  
+    
+
+	
 };
 
 
 
 DayAssistant.prototype.activate = function(event) {
-    //just jump to event if the day = current day of event
+
+	this.timewidget0 = this.controller.get("TimeWidget0");
+    this.timewidget1 = this.controller.get("TimeWidget1");
+    this.timewidget2 = this.controller.get("TimeWidget2");
+   
+    this.getStartupOrientation();
+	
+	//make bubble tapable	
+    this.showDetails();  
+	
+/*
+	//just jump to event if the day = current day of event
     dateArr = [];
     var today = this.date.getDate()+this.date.getMonth()+this.date.getFullYear();
-//    today = '29122010';
+Mojo.Log.error(today);
+    today = '29122010';
     dateArr[0] = '27122010';
     dateArr[1] = '28122010';
     dateArr[2] = '29122010';
@@ -91,159 +98,154 @@ DayAssistant.prototype.activate = function(event) {
     
     if(dateArr.join().indexOf(today)>=0) {
         if(dateArr[Number(this.day)] == today){
-            this.chooseSaal();
+			var orient = this.controller.stageController.getWindowOrientation();
+			if (orient == 'right' || orient == 'left') {
+				this.chooseSaal();
+			}
         }
-    }
-    if (!OrientationHelper.back) {
-		this.getStartupOrientation();
-	}
-	OrientationHelper.back = false;
-    this.timewidget0 = this.controller.get("TimeWidget0");
-	this.timewidget1 = this.controller.get("TimeWidget1");
-	this.timewidget2 = this.controller.get("TimeWidget2");
-	
-    this.showDetails();  
+    } 
+*/
 };
 
 
 DayAssistant.prototype.deactivate = function(event) {	
 
-    Mojo.Event.stopListening(this.timewidget0, Mojo.Event.listTap, this.openDetailWithIdBind0);
-	Mojo.Event.stopListening(this.timewidget1, Mojo.Event.listTap, this.openDetailWithIdBind1);
-	Mojo.Event.stopListening(this.timewidget2, Mojo.Event.listTap, this.openDetailWithIdBind2);
-	
+    this.controller.stopListening(this.timewidget0, Mojo.Event.listTap, this.openDetailWithIdBind0);
+	this.controller.stopListening(this.timewidget1, Mojo.Event.listTap, this.openDetailWithIdBind1);
+	this.controller.stopListening(this.timewidget2, Mojo.Event.listTap, this.openDetailWithIdBind2);
+
+    this.controller.stopListening(this.controller.document, 'orientationchange',  this.orientationBinder);  
+
 };
 
 
 DayAssistant.prototype.cleanup = function(event) {
-    
+    OrientationHelper.alreadyVisited = true;
 };
 
 DayAssistant.prototype.getStartupOrientation = function () {
         
     var orient = this.controller.stageController.getWindowOrientation();
-     Mojo.Log.error(orient);    
+
 	switch(orient){
         case "up":
         case "down":
-            
-            this.setPortrait();
+			this.setPortrait(false); // change bubble size
         break;
         //landscape
         case "left":
         case "right":
-            
-            this.setLandscape();   
+			this.setLandscape(false);
         break;   
     }
 };
 
 
 DayAssistant.prototype.handleOrientation = function (event) {
-   
+
+	   
     switch(event.position){
         case 2:
         case 3:
-            this.setPortrait();
+		    $('title1').hide();
+            $('title2').hide();
+            $('title3').hide();
+            this.setPortrait(false);
         break;
         //landscape
         case 4:
         case 5:
-            this.setLandscape();   
+		    $('title1').hide();
+            $('title2').hide();
+            $('title3').hide();
+            this.setLandscape(false);   
         break;   
     }
 };
-DayAssistant.prototype.setLandscape = function(){
-    if (OrientationHelper.last != 'landscape') {
-		$('scrollerItem:1').removeClassName('portrait');
-        $('scrollerItem:2').removeClassName('portrait');
-        $('scrollerItem:3').removeClassName('portrait');
-		
-		$('scrollerItem:1').addClassName('landscape');
-        $('scrollerItem:2').addClassName('landscape');
-        $('scrollerItem:3').addClassName('landscape');
-		
-		
-		$('container').removeClassName('scrollerContainerPortait');
-		//make bubbles longer
+DayAssistant.prototype.setLandscape = function(first){
+    
+	
+	$('scrollerItem:1').removeClassName('portrait');
+    $('scrollerItem:2').removeClassName('portrait');
+    $('scrollerItem:3').removeClassName('portrait');
+	
+	$('scrollerItem:1').addClassName('landscape');
+    $('scrollerItem:2').addClassName('landscape');
+    $('scrollerItem:3').addClassName('landscape');
+	
+	
+	$('container').removeClassName('scrollerContainerPortait');
+	if (OrientationHelper.last != 'landscape') {
 
-		for (var room = 0; room < 3; room++) {
-			for (var i = 0; i < this.text[this.day][room].length; i++) {
-				this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration) * 2;
+		//make bubbles longer
+	    if (!first) {
+			for (var room = 0; room < 3; room++) {
+				for (var i = 0; i < this.text[this.day][room].length; i++) {
+					Fahrplan.data[this.day][room][i].duration = Number(this.text[this.day][room][i].duration) * 2;
+				}
 			}
-		}
-		
-		
-		for (var i = 0; i < 3; i++) {
-			this.menuModel = {
-				items: this.text[this.day][i]
-			};
-			widget = 'TimeWidget' + i;
-			this.controller.setWidgetModel(widget, this.menuModel);
-			this.controller.modelChanged(this.menuModel);
 			
-		}
-		OrientationHelper.last = 'landscape';
-	}	
+			this.text = Fahrplan.data;
+			this.newMenuModel = [];
+			for (var i = 0; i < 3; i++) {
+				this.newMenuModel[i] = {
+					items: this.text[this.day][i]
+				};
+	
+			}
+			
+			this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+	        this.controller.setWidgetModel(this.timewidget1, this.newMenuModel[1]);
+			this.controller.setWidgetModel(this.timewidget2, this.newMenuModel[2]);
+	//			this.controller.modelChanged(this.menuModel);
+		}	
+		
+	}
+	OrientationHelper.last = 'landscape'; 
+    $('title1').show();
+    $('title2').show();
+    $('title3').show();
 };  
-DayAssistant.prototype.setPortrait = function(){
+DayAssistant.prototype.setPortrait = function(first){
     
 
+    $('scrollerItem:1').addClassName('portrait');
+	$('scrollerItem:2').addClassName('portrait');
+	$('scrollerItem:3').addClassName('portrait');
+	
+	$('scrollerItem:1').removeClassName('landscape');
+    $('scrollerItem:2').removeClassName('landscape');
+    $('scrollerItem:3').removeClassName('landscape');
+	
+	$('container').addClassName('scrollerContainerPortait');
 	if(OrientationHelper.last != 'portrait'){
-        $('scrollerItem:1').addClassName('portrait');
-		$('scrollerItem:2').addClassName('portrait');
-		$('scrollerItem:3').addClassName('portrait');
-		
-		$('scrollerItem:1').removeClassName('landscape');
-        $('scrollerItem:2').removeClassName('landscape');
-        $('scrollerItem:3').removeClassName('landscape');
-		
-		$('container').addClassName('scrollerContainerPortait');
-		
-        for (var room = 0; room < 3; room++) {
-            for (var i = 0; i < this.text[this.day][room].length; i++) {
-                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration) / 2;
-            }
-        }
-        
-        for (var i = 0; i < 3; i++) {
-            this.menuModel = {
-                items: this.text[this.day][i]
-            };
-            widget = 'TimeWidget' + i;
-            this.controller.setWidgetModel(widget, this.menuModel);
-            this.controller.modelChanged(this.menuModel);
-            
-        }
+		if (!first) {
+			for (var room = 0; room < 3; room++) {
+				for (var i = 0; i < this.text[this.day][room].length; i++) {
+					Fahrplan.data[this.day][room][i].duration = Number(this.text[this.day][room][i].duration) / 2;
+				}
+			}
+            this.text = Fahrplan.data;
+            this.newMenuModel = [];
+            for (var i = 0; i < 3; i++) {
+                this.newMenuModel[i] = {
+                    items: this.text[this.day][i]
+                };
 
+            }
+            
+            this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+            this.controller.setWidgetModel(this.timewidget1, this.newMenuModel[1]);
+            this.controller.setWidgetModel(this.timewidget2, this.newMenuModel[2]);
+		}
+    
     }
     OrientationHelper.last = 'portrait';  
- 
+    $('title1').show();
+    $('title2').show();
+    $('title3').show(); 
 };  
-/*
-DayAssistant.prototype.handleTap= function(element, event) {
-    switch(element.id){
-        case 'saal1':
-            this.chooseRoom = 0;
-            this.title.update('Saal 1');
-        break;
-        case 'saal2':
-            this.chooseRoom = 1;
-            this.title.update('Saal 2');			
-        break;
-        case 'saal3':
-            this.chooseRoom = 2;
-            this.title.update('Saal 3');			
-        break;
-    }
-    this.menuModel = {
-        items: this.text[this.day][this.chooseRoom]
-    }
-    this.controller.setWidgetModel(this.timewidget, this.menuModel);
-    this.controller.modelChanged(this.menuModel);
-    this.showDetails(this.chooseRoom);
-};
-*/
+
 
 DayAssistant.prototype.chooseSaal = function() {
 
@@ -286,38 +288,21 @@ DayAssistant.prototype.chooseSaal = function() {
         }
     }	
 //   Mojo.Log.error('timeid: '+this.timeID);
-    if (this.timeID) {
-        this.menuModel = {
-            items: this.text[this.day][this.chooseRoom]
-        };
-        this.controller.setWidgetModel(this.timewidget, this.menuModel);	
-        this.revealItem(this.timeID);
+    if (this.timeID) {	
+
+        this.revealItem(this.timeID,this.chooseRoom);
     }	
 			
 };
 
-/*
-DayAssistant.prototype.setTitle = function(room){
-    
-    switch(room){
-        case 0:	
-            this.title.update('Saal 1');
-        break;
-        case 1:
-            this.title.update('Saal 2');			
-        break;
-        case 2:
-            this.title.update('Saal 3');			
-        break;
-    }
-    
-};	
-*/
-//!!!!!!!!!!!!!!!!!!!!
-DayAssistant.prototype.revealItem = function(timeID) {	
 
-//    this.controller.setWidgetModel(this.timewidget, this.menuModel);
-    this.timewidget.mojo.revealItem(timeID, false);
+DayAssistant.prototype.revealItem = function(timeID, room) {	
+//Mojo.Log.error(room+'  '+timeID);
+
+		    this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+	       	this.timewidget0.mojo.revealItem(timeID, false);
+
+    
 };
 
 
@@ -353,25 +338,4 @@ DayAssistant.prototype.openDetailWithId = function(event, room){
         });
     
     }
-};
-
-
-DayAssistant.prototype.update = function(room, id){
-        this.chooseRoom = room;
-		switch(this.chooseRoom){
-			case 0:
-			
-			break;
-			
-			case 1:
-			
-			break;
-			
-			case 2:
-			
-			break;
-	
-        }
-
-        this.revealItem(id);    
 };

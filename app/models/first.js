@@ -1,6 +1,5 @@
+OrientationHelper = {};
 Congress = {};
-
-
 Congress.menu = [
         {
             title: $L("Day 1"),
