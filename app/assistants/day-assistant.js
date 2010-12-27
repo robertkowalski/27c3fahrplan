@@ -38,7 +38,7 @@ DayAssistant.prototype.setup = function() {
          this.attributes = {
              },
          this.model = {
-             label : "Saal 1",
+             label : $L('Saal 1'),
              disabled: false
          }
      );
@@ -46,7 +46,7 @@ DayAssistant.prototype.setup = function() {
          this.attributes = {
              },
          this.model = {
-             label : "Saal 2",
+             label : $L('Saal 2'),
              disabled: false
 			 
          }
@@ -55,11 +55,15 @@ DayAssistant.prototype.setup = function() {
          this.attributes = {
              },
          this.model = {
-             label : "Saal 3",
+             label : $L('Saal 3'),
              disabled: false
          }
      );
 
+	this.cmdMenuModel = {
+ 		visible: true,
+ 		items: [{}, this.reloadModel]
+     };
 	this.text = Fahrplan.data.evalJSON(true);
 	
 	var emptyTimes = [];
@@ -95,9 +99,13 @@ DayAssistant.prototype.setup = function() {
 			return a.start - b.start
 		});
 		for(var i=0; i<this.text[this.day][room].length; i++){
-			this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*3;
-			if(this.text[this.day][room][i].duration > 200) {
-				this.text[this.day][room][i].duration = 200;
+			this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
+			if(this.text[this.day][room][i].title.length >= 45 && this.text[this.day][room][i].slots <= 2){
+				this.text[this.day][room][i].title = this.text[this.day][room][i].title.substring(0,45);
+				this.text[this.day][room][i].title += '...';
+			}
+			if(this.text[this.day][room][i].duration > 150) {
+				this.text[this.day][room][i].duration = 150;
 			}
 			
 		}

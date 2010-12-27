@@ -1,16 +1,19 @@
 .buttonClass {
     position:fixed;
     bottom:0px;    
+	right:10px;
+	padding-right:200px;
 }
 .buttonClass2 {
     position:fixed;
     bottom:0px;
-    left:100px;
+    right:10px;
+	padding-right:100px;
 }
 .buttonClass3 {
     position:fixed;
     bottom:0px;
-    left:200px;
+    right:10px;
 }
 .copyright_help {
     position:relative;

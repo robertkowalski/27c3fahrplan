@@ -1,17 +1,21 @@
 [
-    {"source": "app\/assistants\/stage-assistant.js"},
-    {"source": "app\/models\/first.js"},
-    {"source": "app\/models\/fahrplan.js"},
+    {"source": "app/assistants/stage-assistant.js"},
+    {"source": "app/models/first.js"},
+    {"source": "app/models/fahrplan.js"},
     {
-        "source": "app\/assistants\/first-assistant.js",
-        "scenes": "first"
+        "scenes": "first",
+        "source": "app/assistants/first-assistant.js"
     },
     {
-        "source": "app\/assistants\/day-assistant.js",
-        "scenes": "day"
+        "scenes": "day",
+        "source": "app/assistants/day-assistant.js"
     },
     {
-        "source": "app\/assistants\/help-assistant.js",
-        "scenes": "help"
+        "scenes": "help",
+        "source": "app/assistants/help-assistant.js"
+    },
+    {
+        "scenes": "detail",
+        "source": "app/assistants/detail-assistant.js"
     }
 ]
