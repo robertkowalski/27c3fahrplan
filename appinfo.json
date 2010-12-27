@@ -1,10 +1,10 @@
 {
-	"id": "rok.fahrplancongress.webos",
+	"id": "rok.fahrplancongress27c3.webos",
 	"version": "1.0.0",
 	"vendor": "Robert Kowalski",
 	"type": "web",
 	"main": "index.html",
-	"title": "Fahrplan 27th Chaos Communication Congress",
+	"title": "Fahrplan 27C3",
     "noDeprecatedStyles": true,
     "theme": "light",
  

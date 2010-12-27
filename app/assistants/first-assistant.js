@@ -29,43 +29,32 @@ function FirstAssistant() {
 
 }
 
-FirstAssistant.prototype.setup = function() {
+FirstAssistant.prototype.setup = function(){
 
-	this.controller.setupWidget(Mojo.Menu.appMenu,
-	    this.attributes = {
-	        omitDefaultItems: true
-	    },
-	    this.model = {
-	        visible: true,
-	        items: [ 
-	            Mojo.Menu.editItem,
-				{ label: "Help", command: "do-helpAddSub"},
-				{ label: "About", command: 'do-About' }
-	        ]
-	    }
-	);
-   
-    this.controller.setupWidget("MenuWidget", {
-            itemTemplate: "first/first-row-template",
-            listTemplate: "first/first-list-template",
-            swipeToDelete: false, 
-            renderLimit: 23,
-            reorderable: false
-        },    
-        this.menuModel = {
-            items: Congress.menu
-        }
-    );
-   
-    this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
-
-    
-    var time =  Mojo.Format.formatDate(new Date(), {
-		time: "medium",
-        date: "medium",
-		countryCode: "DE"
-    });
-    this.controller.get('time').update(time);
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
+		omitDefaultItems: true
+	}, this.model = {
+		visible: true,
+		items: [Mojo.Menu.editItem, {
+			label: "Help",
+			command: "do-helpAddSub"
+		}, {
+			label: "About",
+			command: 'do-About'
+		}]
+	});
+	
+	this.controller.setupWidget("MenuWidget", {
+		itemTemplate: "first/first-row-template",
+		listTemplate: "first/first-list-template",
+		swipeToDelete: false,
+		renderLimit: 23,
+		reorderable: false
+	}, this.menuModel = {
+		items: Congress.menu
+	});
+	
+	this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
 }
 
 FirstAssistant.prototype.activate = function(event) {
@@ -85,7 +74,7 @@ FirstAssistant.prototype.cleanup = function(event) {
 
 FirstAssistant.prototype.openMenuItem = function(event) {
     
-    Mojo.Controller.stageController.pushScene(this.menuModel.items[event.index].scene);
+    Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day});
 
 };
 

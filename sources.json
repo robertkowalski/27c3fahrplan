@@ -7,8 +7,8 @@
         "scenes": "first"
     },
     {
-        "source": "app\/assistants\/day-1-assistant.js",
-        "scenes": "day-1"
+        "source": "app\/assistants\/day-assistant.js",
+        "scenes": "day"
     },
     {
         "source": "app\/assistants\/help-assistant.js",
