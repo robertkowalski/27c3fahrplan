@@ -25,6 +25,12 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 */
 
+Helper = {};
+Helper.hide = function(){
+    $('Scrim').hide();
+    FirstAssistant.getStartupOrientation();
+}
+
 function FirstAssistant() {
 
 }
@@ -73,31 +79,59 @@ FirstAssistant.prototype.setup = function(){
     
     this.openMenuItem = this.openMenuItem.bindAsEventListener(this); //PRE-CACHE//
     this.menuWidget = this.controller.get('MenuWidget');
+   
+    if (this.controller.stageController.setWindowOrientation) {
+        this.controller.stageController.setWindowOrientation("free");
+    }
 	
-	
+	this.controller.serviceRequest('palm://com.palm.connectionmanager', {
+	    method: 'getstatus', 
+	    parameters:  {subscribe: true}, 
+		onSuccess: this.handleResponse.bind(this)
+    });
+    
+    this.orientationBinder = this.handleOrientation.bindAsEventListener(this);
+	this.controller.listen(this.controller.document, 'orientationchange', this.orientationBinder);  
 };
+
+
 
 FirstAssistant.prototype.activate = function(event) {
     this.controller.listen(this.menuWidget, Mojo.Event.listTap, this.openMenuItem);
 	this.controller.listen(this.bookmarksId, Mojo.Event.tap, this.showBookmarks);
-
+    
 };
 
 
 FirstAssistant.prototype.deactivate = function(event) {
     this.controller.stopListening(this.menuWidget, Mojo.Event.listTap, this.openMenuItem);
     this.controller.stopListening(this.bookmarksId, Mojo.Event.tap, this.showBookmarks);
-
+    this.controller.stopListening(this.controller.document, 'orientationchange',  this.orientationBinder);
 };
 
 FirstAssistant.prototype.cleanup = function(event) {
    
    
 };
+FirstAssistant.prototype.handleResponse = function (response) {
+
+	if(response.wifi.state == 'disconnected' && response.wan.state == 'disconnected'){
+        Mojo.Controller.errorDialog("You need a WAN or WLAN connection");
+
+	}
+	
+}
 
 FirstAssistant.prototype.openMenuItem = function(event) {
-    
-    Mojo.Controller.stageController.pushScene({name:this.menuModel.items[event.index].scene},{day: this.menuModel.items[event.index].day, room: 0});
+    var orient = this.controller.stageController.getWindowOrientation();
+	
+    Mojo.Controller.stageController.pushScene(
+	   {name:this.menuModel.items[event.index].scene},
+	   {
+	   	   day: this.menuModel.items[event.index].day, 
+	       room: 0,
+		   orientation: orient
+	   });
 };
 
 FirstAssistant.prototype.openFavorites = function(event) {
@@ -106,7 +140,71 @@ FirstAssistant.prototype.openFavorites = function(event) {
         name: "favorites"
     });
 };
-Helper = {};
-Helper.hide = function(){
-    $('Scrim').hide();
-}    
+
+// START orientation handling //
+FirstAssistant.prototype.getStartupOrientation = function () {
+        
+    var orient = this.controller.stageController.getWindowOrientation();
+
+	switch(orient){
+        case "up":
+        case "down":
+			this.setPortrait(); // change bubble size
+        break;
+        //landscape
+        case "left":
+        case "right":
+			this.setLandscape();
+        break;   
+    }
+};
+
+FirstAssistant.prototype.handleOrientation = function (event) {
+
+	   
+    switch(event.position){
+        case 2:
+        case 3:
+            this.setPortrait();
+        break;
+        //landscape
+        case 4:
+        case 5:
+            this.setLandscape();   
+        break;   
+    }
+};
+
+FirstAssistant.prototype.setLandscape = function(){
+    
+	if (OrientationHelper.last != 'landscape') {
+    
+        //make bubbles longer
+    for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) * 2;
+                }
+            }
+        }
+    }
+	OrientationHelper.last = 'landscape'; 
+
+};  
+FirstAssistant.prototype.setPortrait = function(){
+	
+	if(OrientationHelper.last != 'portrait'){
+        for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) / 2;
+                }
+            }
+        }    
+    }
+    OrientationHelper.last = 'portrait';  
+    
+};  
+// END orientation handling //
+
+    

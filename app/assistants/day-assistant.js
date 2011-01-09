@@ -25,55 +25,24 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 */
 
-function DayAssistant(response) {
 
+function DayAssistant(response) {
+    	 
+    this.orientation = response.orientation;
     this.day = response.day;
     this.date = new Date();  
-    this.chooseRoom = response.room;   
+    this.chooseRoom = response.room;
+	
+	
+	$('title1').hide();
+    $('title2').hide();
+    $('title3').hide();   
 }
 
 DayAssistant.prototype.setup = function() {
   
     this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel); 
-         
-     this.controller.setupWidget("saal1",
-         this.attributes = {
-             },
-         this.model = {
-             label : $L('Saal 1'),
-             disabled: false
-         }
-     );
-     this.controller.setupWidget("saal2",
-         this.attributes = {
-             },
-         this.model = {
-             label : $L('Saal 2'),
-             disabled: false
-             
-         }
-     );
-     this.controller.setupWidget("saal3",
-         this.attributes = {
-             },
-         this.model = {
-             label : $L('Saal 3'),
-             disabled: false
-         }
-     );
 
-    this.cmdMenuModel = {
-        visible: true,
-        items: [{}, this.reloadModel]
-     };
-    
-    this.text = Fahrplan.data;
-
-    this.title = this.controller.get('title');
-    this.setTitle(this.chooseRoom);
-    
-//!---------------------- 
-/*
     this.controller.setupWidget("scrollerId", {
                             mode: 'horizontal-snap'
                             }, this.model = {
@@ -83,7 +52,7 @@ DayAssistant.prototype.setup = function() {
     var widget;
 	for(var i=0;i<3;i++){
 		this.menuModel = {
-            items: this.text[this.day][i]
+            items: Fahrplan.data[this.day][i]
         };
 		widget = 'TimeWidget'+i;
 	    this.controller.setupWidget(widget, {
@@ -94,31 +63,31 @@ DayAssistant.prototype.setup = function() {
 	            reorderable: false
 	        },this.menuModel);
 	}	
-*/
-this.menuModel = {
-            items: this.text[this.day][this.chooseRoom]
-        };   
-this.controller.setupWidget('TimeWidget', {
-                itemTemplate: "day/day-row-template",
-                listTemplate: "day/day-list-template",
-                swipeToDelete: false, 
-                renderLimit: 50,
-                reorderable: false
-            },this.menuModel);
- 
 
-    this.saal1 = this.controller.get('saal1');
-    this.saal2 = this.controller.get('saal2');
-    this.saal3 = this.controller.get('saal3');
-    
+    this.orientationBinder = this.handleOrientation.bindAsEventListener(this);
+    this.controller.listen(this.controller.document, 'orientationchange', this.orientationBinder);  
+   
 };
 
 
+
 DayAssistant.prototype.activate = function(event) {
-    //just jump to event if the day = current day of event
+
+	this.timewidget0 = this.controller.get("TimeWidget0");
+    this.timewidget1 = this.controller.get("TimeWidget1");
+    this.timewidget2 = this.controller.get("TimeWidget2");
+   
+    this.getStartupOrientation();
+	
+	//make bubble tapable	
+    this.showDetails();  
+	
+/*
+	//just jump to event if the day = current day of event
     dateArr = [];
     var today = this.date.getDate()+this.date.getMonth()+this.date.getFullYear();
-//    today = '29122010';
+Mojo.Log.error(today);
+    today = '29122010';
     dateArr[0] = '27122010';
     dateArr[1] = '28122010';
     dateArr[2] = '29122010';
@@ -126,72 +95,183 @@ DayAssistant.prototype.activate = function(event) {
     
     if(dateArr.join().indexOf(today)>=0) {
         if(dateArr[Number(this.day)] == today){
-            this.chooseSaal();
+			var orient = this.controller.stageController.getWindowOrientation();
+			if (orient == 'right' || orient == 'left') {
+				this.chooseSaal();
+			}
         }
-    }
-
-    this.openSaal1 = this.handleTap.bind(this, this.saal1);
-    this.openSaal2 = this.handleTap.bind(this, this.saal2);
-    this.openSaal3 = this.handleTap.bind(this, this.saal3);
-    this.controller.listen(this.saal1, Mojo.Event.tap, this.openSaal1);
-    this.controller.listen(this.saal2, Mojo.Event.tap, this.openSaal2);
-    this.controller.listen(this.saal3, Mojo.Event.tap, this.openSaal3);
-//!----------------------   
-//   this.timewidget = this.controller.get("TimeWidget0");
-   
-    this.timewidget = this.controller.get("TimeWidget");
-    this.showDetails(this.chooseRoom);  
+    } 
+*/
 };
 
 
 DayAssistant.prototype.deactivate = function(event) {	
 
-    Mojo.Event.stopListening(this.saal1, Mojo.Event.tap, this.openSaal1);
-    Mojo.Event.stopListening(this.saal2, Mojo.Event.tap, this.openSaal2);
-    Mojo.Event.stopListening(this.saal3, Mojo.Event.tap, this.openSaal3);	
-
-    Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
+    this.controller.stopListening(this.timewidget0, Mojo.Event.listTap, this.openDetailWithIdBind0);
+	this.controller.stopListening(this.timewidget1, Mojo.Event.listTap, this.openDetailWithIdBind1);
+	this.controller.stopListening(this.timewidget2, Mojo.Event.listTap, this.openDetailWithIdBind2);
 };
 
 
 DayAssistant.prototype.cleanup = function(event) {
+    
+    this.controller.stopListening(this.controller.document, 'orientationchange',  this.orientationBinder);      
+};
 
+DayAssistant.prototype.getStartupOrientation = function () {
+        
+    var orient = this.controller.stageController.getWindowOrientation();
+
+	switch(orient){
+        case "up":
+        case "down":
+            this.setPortraitClasses();
+            this.showTitles();
+        break;
+        //landscape
+        case "left":
+        case "right":
+            this.setLandscapeClasses();
+            this.showTitles();
+        break;   
+    }
 };
 
 
-DayAssistant.prototype.handleTap= function(element, event) {
-    switch(element.id){
-        case 'saal1':
-            this.chooseRoom = 0;
-            this.title.update('Saal 1');
+DayAssistant.prototype.handleOrientation = function (event) {
+	   
+    switch(event.position){
+        case 2:
+        case 3:		    
+            this.hideTitles();
+            this.setPortrait();
+            this.setPortraitClasses();
         break;
-        case 'saal2':
-            this.chooseRoom = 1;
-            this.title.update('Saal 2');			
-        break;
-        case 'saal3':
-            this.chooseRoom = 2;
-            this.title.update('Saal 3');			
-        break;
+        //landscape
+        case 4:
+        case 5:
+		    this.hideTitles();
+            this.setLandscape();         
+        break;   
     }
-    this.menuModel = {
-        items: this.text[this.day][this.chooseRoom]
-    }
-    this.controller.setWidgetModel(this.timewidget, this.menuModel);
-    this.controller.modelChanged(this.menuModel);
-    Mojo.Event.stopListening(this.timewidget, Mojo.Event.listTap, this.openDetailWithIdBind);
-    this.showDetails(this.chooseRoom);
 };
 
+DayAssistant.prototype.setLandscape = function(){
+    
+	
 
+	if (OrientationHelper.last != 'landscape') {
+        this.setLandscapeClasses();
+	//make bubbles longer
+		for (var room = 0; room < Fahrplan.data[this.day].length; room++) {
+			for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+				Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) * 2;
+			}
+		}
+		
+		this.newMenuModel = [];
+		for (var i = 0; i < 3; i++) {
+			this.newMenuModel[i] = {
+				items: Fahrplan.data[this.day][i]
+			};
+
+		}
+		
+		this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+        this.controller.setWidgetModel(this.timewidget1, this.newMenuModel[1]);
+		this.controller.setWidgetModel(this.timewidget2, this.newMenuModel[2]);
+//			this.controller.modelChanged(this.menuModel);
+	
+		
+	}
+    this.showTitles();
+	OrientationHelper.last = 'landscape'; 
+    
+};  
+
+DayAssistant.prototype.setPortrait = function(){
+    
+    
+	if(OrientationHelper.last != 'portrait'){
+        
+		
+        for (var room = 0; room < Fahrplan.data[this.day].length; room++) {
+			for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+				Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) / 2;
+			}
+		}
+       
+        this.newMenuModel = [];
+        for (var i = 0; i < 3; i++) {
+            this.newMenuModel[i] = {
+                items: Fahrplan.data[this.day][i]
+            };
+
+        }
+        
+        this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+        this.controller.setWidgetModel(this.timewidget1, this.newMenuModel[1]);
+        this.controller.setWidgetModel(this.timewidget2, this.newMenuModel[2]);
+
+    }
+    this.showTitles();
+    OrientationHelper.last = 'portrait';  
+    
+};  
+
+
+DayAssistant.prototype.setLandscapeClasses = function(){
+	
+    $('scrollerItem:1').removeClassName('portrait');
+    $('scrollerItem:2').removeClassName('portrait');
+    $('scrollerItem:3').removeClassName('portrait');
+	
+	$('scrollerItem:1').addClassName('landscape');
+    $('scrollerItem:2').addClassName('landscape');
+    $('scrollerItem:3').addClassName('landscape');
+	
+	
+	$('container').removeClassName('scrollerContainerPortait');
+}    
+
+DayAssistant.prototype.setPortraitClasses = function() {
+  
+    $('scrollerItem:1').addClassName('portrait');
+	$('scrollerItem:2').addClassName('portrait');
+	$('scrollerItem:3').addClassName('portrait');
+	
+	$('scrollerItem:1').removeClassName('landscape');
+    $('scrollerItem:2').removeClassName('landscape');
+    $('scrollerItem:3').removeClassName('landscape');
+	
+	$('container').addClassName('scrollerContainerPortait');
+    
+    Mojo.Log.error('CLASSES');
+}
+
+DayAssistant.prototype.showTitles = function() {
+    
+    $('title1').show();
+    $('title2').show();
+    $('title3').show(); 
+}
+DayAssistant.prototype.hideTitles = function() {
+
+    $('title1').hide();
+    $('title2').hide();
+    $('title3').hide();
+    
+}
+
+/*
 DayAssistant.prototype.chooseSaal = function() {
 
     var thisHour = this.date.getHours();   
     var countroom;
     
     for (countroom = 2; countroom > -1; countroom--) {
-        for (i = 0; i < this.text[this.day][countroom].length; i++) {
-            if (this.text[this.day][countroom][i].hourid == thisHour) {
+        for (i = 0; i < Fahrplan.data[this.day][countroom].length; i++) {
+            if (Fahrplan.data[this.day][countroom][i].hourid == thisHour) {
                 this.chooseRoom = countroom;
                 this.timeID = i;
                 break;
@@ -205,10 +285,10 @@ DayAssistant.prototype.chooseSaal = function() {
     if(!this.timeID){
         thisHour = thisHour+1;
         for (countroom = 2; countroom > -1; countroom--) {
-            for (i = 0; i < this.text[this.day][countroom].length; i++) { 
-                if (this.text[this.day][countroom][i].hourid == thisHour) {
+            for (i = 0; i < Fahrplan.data[this.day][countroom].length; i++) { 
+                if (Fahrplan.data[this.day][countroom][i].hourid == thisHour) {
                     this.chooseRoom = countroom;
-                    this.timeID = this.text[this.day][countroom][i].hourid;
+                    this.timeID = Fahrplan.data[this.day][countroom][i].hourid;
                 }
             }
         }
@@ -216,84 +296,61 @@ DayAssistant.prototype.chooseSaal = function() {
     if(!this.timeID){
         thisHour = thisHour+2;
         for (countroom = 2; countroom > -1; countroom--) {
-            for (i = 0; i < this.text[this.day][countroom].length; i++) { 
-                if (this.text[this.day][countroom][i].hourid == thisHour) {
+            for (i = 0; i < Fahrplan.data[this.day][countroom].length; i++) { 
+                if (Fahrplan.data[this.day][countroom][i].hourid == thisHour) {
                     this.chooseRoom = countroom;
-                    this.timeID = this.text[this.day][countroom][i].hourid;
+                    this.timeID = Fahrplan.data[this.day][countroom][i].hourid;
                 }
             }
         }
     }	
 //   Mojo.Log.error('timeid: '+this.timeID);
-    if (this.timeID) {
-        this.menuModel = {
-            items: this.text[this.day][this.chooseRoom]
-        };
-        this.controller.setWidgetModel(this.timewidget, this.menuModel);	
-        this.setTitle(this.chooseRoom);
-        this.revealItem(this.timeID);
-        this.showDetails.bind(this.chooseRoom);
+    if (this.timeID) {	
+
+        this.revealItem(this.timeID,this.chooseRoom);
     }	
 			
 };
 
 
-DayAssistant.prototype.setTitle = function(room){
-    
-    switch(room){
-        case 0:	
-            this.title.update('Saal 1');
-        break;
-        case 1:
-            this.title.update('Saal 2');			
-        break;
-        case 2:
-            this.title.update('Saal 3');			
-        break;
-    }
-    
-};	
+DayAssistant.prototype.revealItem = function(timeID, room) {	
 
-
-DayAssistant.prototype.revealItem = function(timeID) {	
-
-    this.controller.setWidgetModel(this.timewidget, this.menuModel);
-    this.timewidget.mojo.revealItem(timeID, false);
+    this.controller.setWidgetModel(this.timewidget0, this.newMenuModel[0]);
+   	this.timewidget0.mojo.revealItem(timeID, false);
+  
 };
+*/
 
-
-DayAssistant.prototype.showDetails = function(room){
-
-    this.room = room;
+DayAssistant.prototype.showDetails = function(){
     
-    this.openDetailWithIdBind = this.openDetailWithId.bindAsEventListener(this, this.room); //PRE-CACHE//
-    this.controller.listen(this.timewidget, Mojo.Event.listTap,this.openDetailWithIdBind);
+	this.room0 = 0;
+	this.room1 = 1;
+	this.room2 = 2;
+	
+    this.openDetailWithIdBind0 = this.openDetailWithId.bindAsEventListener(this, this.room0); //PRE-CACHE//
+    this.openDetailWithIdBind1 = this.openDetailWithId.bindAsEventListener(this, this.room1); //PRE-CACHE//
+    this.openDetailWithIdBind2 = this.openDetailWithId.bindAsEventListener(this, this.room2); //PRE-CACHE//
+    
+	this.controller.listen(this.timewidget0, Mojo.Event.listTap,this.openDetailWithIdBind0);
+	this.controller.listen(this.timewidget1, Mojo.Event.listTap,this.openDetailWithIdBind1);
+	this.controller.listen(this.timewidget2, Mojo.Event.listTap,this.openDetailWithIdBind2);	
+
 };
 
 
 DayAssistant.prototype.openDetailWithId = function(event, room){
     // emptyTimes[this.day][room][countEmpty].id = '0000';
-    if (this.text[this.day][this.chooseRoom][event.index].color != 'transparent') {
+    
+	if (Fahrplan.data[this.day][room][event.index].color != 'transparent') {
 
         Mojo.Controller.stageController.pushScene({
             name: 'detail'
         }, {
             day: this.day,
-            room: this.chooseRoom,
+            room: room,
             detailid: event.index
            
         });
     
     }
-};
-
-
-DayAssistant.prototype.update = function(room, id){
-    
-        this.chooseRoom = room;
-        this.menuModel = {
-            items: this.text[this.day][this.chooseRoom]
-        };
-        this.controller.setWidgetModel(this.timewidget, this.menuModel);	
-        this.revealItem(id);    
 };

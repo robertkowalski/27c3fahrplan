@@ -1,13 +1,20 @@
+.landscape{
+	width:33.5%;
+	min-width:33.5%;
+}
+.portrait{
+	width:320px;
+	min-width:320px;
+}
+
 /* A scroller needs a container element */
-.scrollerContainer {
+.scrollerContainerPortait {
     width:  960px;
-    height: 400px;
+    height: 300px;
 }
 /* An item that is viewable in the scroll pane window */
 .scrollerItem {
-    float:     left;
-    width:     320px;
-    min-width: 320px;
+    float: left;
 }
 
 

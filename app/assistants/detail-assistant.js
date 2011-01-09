@@ -26,18 +26,17 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 
 function DetailAssistant(response) {
-    
+//    Mojo.Log.error('detail-room'+response.detailid);
     this.day = response.day;
     this.room = response.room;
     this.indexId = response.detailid;
         
-    this.text = Fahrplan.data;
+ 
     this.content = [];
-    this.content[0] = this.text[this.day][this.room][this.indexId];
+    this.content[0] = Fahrplan.data[this.day][this.room][this.indexId];
     
-    this.detailid = this.text[this.day][this.room][response.detailid].id;
-    
-
+    this.detailid = Fahrplan.data[this.day][this.room][response.detailid].id;
+  
 }
 
 
@@ -45,7 +44,7 @@ DetailAssistant.prototype.setup = function() {
 
     this.controller.setupWidget(Mojo.Menu.appMenu, appMenuAttributes, appMenuModel);
     
-    Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.indexId);
+ //   Mojo.Controller.stageController.delegateToSceneAssistant("update", this.room, this.indexId);
 
     this.detailModel = {
             items: this.content
@@ -98,8 +97,8 @@ DetailAssistant.prototype.setup = function() {
 	
 	this.controller.setInitialFocusedElement(null);
     
+    this.controller.listen(this.controller.document, 'orientationchange', this.orientationBinder); 
 };
-
 
 DetailAssistant.prototype.activate = function(event) {
     
@@ -126,10 +125,10 @@ DetailAssistant.prototype.deactivate = function(event) {
         Mojo.Event.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
     }
 	this.controller.stopListening(this.textFielId, Mojo.Event.tap, this.writeNotes.bind(this));
-
 };
 
 DetailAssistant.prototype.cleanup = function(event) {
+	this.controller.stopListening(this.controller.document, 'orientationchange',  this.orientationBinder);
 };
 
 
@@ -189,12 +188,12 @@ DetailAssistant.prototype.deleteFromFavorites = function(event){
     this.controller.stopListening(this.favButton, Mojo.Event.tap, this.remFromFavs);
     this.controller.listen(this.favButton, Mojo.Event.tap, this.addToFavs);
     this.listener = 'add';
-}
+};
 
 DetailAssistant.prototype.getNotes = function(){
 
     DBAss.getNotes(this.processNotes.bind(this),this.detailid);
-}
+};
 
 DetailAssistant.prototype.processNotes = function(inResult){
 
@@ -204,12 +203,12 @@ DetailAssistant.prototype.processNotes = function(inResult){
 	   	this.controller.modelChanged(this.notesModel);
 	   }
 	}	
-}
+};
 
 DetailAssistant.prototype.writeNotes = function(){
 
     DBAss.getNotes(this.updateOrInsert.bind(this), this.detailid);  
-}
+};
 
 
 DetailAssistant.prototype.updateOrInsert = function(inResult){
@@ -229,4 +228,54 @@ DetailAssistant.prototype.updateOrInsert = function(inResult){
 		
 	}
    
-}
+};
+
+// START orientation handling //
+DetailAssistant.prototype.handleOrientation = function (event) {
+
+	   
+    switch(event.position){
+        case 2:
+        case 3:
+            this.setPortrait();
+        break;
+        //landscape
+        case 4:
+        case 5:
+            this.setLandscape();   
+        break;   
+    }
+};
+
+DetailAssistant.prototype.setLandscape = function(){
+    
+	if (OrientationHelper.last != 'landscape') {
+    
+        //make bubbles longer
+    for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) * 2;
+                }
+            }
+        }
+    }
+	OrientationHelper.last = 'landscape'; 
+
+};  
+
+DetailAssistant.prototype.setPortrait = function(){
+	
+	if(OrientationHelper.last != 'portrait'){
+        for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) / 2;
+                }
+            }
+        }    
+    }
+    OrientationHelper.last = 'portrait';  
+    
+};  
+// END orientation handling //

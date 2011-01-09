@@ -1,15 +1,22 @@
 Fahrplan = {};
 
 Fahrplan.process = function (response) {
+    
     this.text = response.responseText.evalJSON(true);
-
+/*
+    Fahrplan.data = Object.toJSON(json);
+    this.text = Fahrplan.data = Fahrplan.data.evalJSON(true);
+*/   
     var emptyTimes = [];      
         
     var countEmpty = 0;
     var room, i;
-    for(this.day = 0; this.day < 4; this.day++){   
+    
+    Fahrplan.daysCount = this.text.length -1;
+    
+    for(this.day = 0; this.day < this.text.length; this.day++){   
         emptyTimes[this.day] = []; 
-        for (room = 0; room < 3; room++) {
+        for (room = 0; room < this.text[this.day].length; room++) {
             emptyTimes[this.day][room] = [];	
             //Create times where no event is	
             for (i = 0; i < this.text[this.day][room].length - 1; i++) {
@@ -27,7 +34,7 @@ Fahrplan.process = function (response) {
                     emptyTimes[this.day][room][countEmpty].track = '';
                     emptyTimes[this.day][room][countEmpty].subtitle = '&nbsp;';
                     emptyTimes[this.day][room][countEmpty].title = '&nbsp;';
-                    emptyTimes[this.day][room][countEmpty].duration = emptyTimes[this.day][room][countEmpty].ending - emptyTimes[this.day][room][countEmpty].start;
+                    emptyTimes[this.day][room][countEmpty].duration = Number(emptyTimes[this.day][room][countEmpty].ending) - Number(emptyTimes[this.day][room][countEmpty].start);
                     emptyTimes[this.day][room][countEmpty].slots = emptyTimes[this.day][room][countEmpty].duration / 15;
                     emptyTimes[this.day][room][countEmpty].humanstartend = '';
                     emptyTimes[this.day][room][countEmpty].hourid = 'n';
@@ -47,21 +54,22 @@ Fahrplan.process = function (response) {
             });
             // make bubbles bigger
             for(var i=0; i<this.text[this.day][room].length; i++){
-                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*4;
-                if(this.text[this.day][room][i].duration > 150) {
-                    this.text[this.day][room][i].duration = 150;
-                }
-                
+                this.text[this.day][room][i].duration = Number(this.text[this.day][room][i].duration)*6.5;
+               
             }
+            
         } //End Line 82
     }	
     Fahrplan.data = this.text;
-    Helper.hide();
+    Helper.hide(); //hide Scrim
+    Fahrplan.data = Fahrplan.data.evalJSON(true);
+    
 };
 
 
 
 var request = new Ajax.Request(Url.url, {
+	sanitizeJSON: true,
 	method: 'post',
 	evalJSON: 'true',	
 	requestHeaders: {Accept: 'application/json'},
