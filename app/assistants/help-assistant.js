@@ -58,6 +58,9 @@ HelpAssistant.prototype.setup = function() {
     
     this.controller.listen(this.emailId, Mojo.Event.tap, this.showComposeEmail);
     this.controller.listen(this.mapsId, Mojo.Event.tap, this.whereCongress);
+    
+    this.orientationBinder = this.handleOrientation.bindAsEventListener(this);
+    this.controller.listen(this.controller.document, 'orientationchange', this.orientationBinder);  
 };
 
 HelpAssistant.prototype.activate = function(event) {
@@ -66,13 +69,12 @@ HelpAssistant.prototype.activate = function(event) {
 
 
 HelpAssistant.prototype.deactivate = function(event) {
-
     this.controller.stopListening(this.emailId, Mojo.Event.listTap, this.showComposeEmail.bind(this));    
-    this.controller.stopListening(this.mapsId, Mojo.Event.listTap, this.whereCongress.bind(this));    
+    this.controller.stopListening(this.mapsId, Mojo.Event.listTap, this.whereCongress.bind(this));  
 };
 
 HelpAssistant.prototype.cleanup = function(event) {
-
+    this.controller.stopListening(this.controller.document, 'orientationchange',  this.orientationBinder);
 };
 
 HelpAssistant.prototype.showComposeEmail = function(bind){
@@ -103,3 +105,56 @@ HelpAssistant.prototype.whereCongress = function(bind){
         }
     });
 };
+
+
+// START orientation handling //
+HelpAssistant.prototype.handleOrientation = function (event) {
+
+	   
+    switch(event.position){
+        case 2:
+        case 3:
+            this.setPortrait();
+        break;
+        //landscape
+        case 4:
+        case 5:
+            this.setLandscape();   
+        break;   
+    }
+};
+
+HelpAssistant.prototype.setLandscape = function(){
+    
+	if (OrientationHelper.last != 'landscape') {
+    
+        //make bubbles longer
+        for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) * 2;
+                }
+            }
+        }
+        OrientationHelper.last = 'landscape'; 
+    }
+	
+
+};  
+
+HelpAssistant.prototype.setPortrait = function(){
+	
+	if(OrientationHelper.last != 'portrait'){
+        for (this.day = 0; this.day < Fahrplan.data.length; this.day++) {
+            for (var room = 0; room < 3; room++) {
+                for (var i = 0; i < Fahrplan.data[this.day][room].length; i++) {
+                    Fahrplan.data[this.day][room][i].duration = Number(Fahrplan.data[this.day][room][i].duration) / 2;
+                }
+            }
+        }    
+        OrientationHelper.last = 'portrait';  
+    }
+    
+    
+};  
+// END orientation handling //
