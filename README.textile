@@ -1,6 +1,6 @@
 h2. "Congress-Fahrplan 2010"  - Fahrplan of the 27th Chaos Communication Congress
 
-*Copyright (c) 2010, R. Kowalski, Icons by O. Machulla*
+*Copyright (c) 2010-2011, R. Kowalski, Icons by O. Machulla*
 *All rights reserved.*
 
 
